@@ -1,0 +1,126 @@
+---
+/**
+ * Features
+ *
+ * Purpose:
+ *   Homepage Features section — docs/HOMEPAGE_SPECIFICATION.md Section 4.
+ *   Answers "what exactly does the app provide?" now that the visitor
+ *   already understands why nextCitizen exists (Phase 2.2) and how someone
+ *   studies with it (Phase 2.3). Describes capabilities in terms of user
+ *   needs, not marketing claims — every item here either exists today or
+ *   is already on the product roadmap.
+ *
+ *   Phase 6 correction: this section previously presented "Interview
+ *   Practice" as available today, while Screenshots.astro's Interview
+ *   Mode screen was already correctly marked "Coming Soon" — an
+ *   inconsistency flagged in the Phase 5 report. Renamed to "Interview
+ *   Mode" with an explicit `badge: 'Coming Soon'` (rendered through
+ *   ContentCard's existing badge prop) so this section, Screenshots, and
+ *   Trust all now describe the same feature the same way.
+ *
+ * Props:
+ *   None — like WhyNextCitizen/HowItWorks, this is a small, fixed, curated
+ *   set specific to this section, colocated rather than data-driven from
+ *   src/data/.
+ *
+ * Dependencies:
+ *   - components/ui/Section.astro, SectionHeader.astro (Phase 2.5 shared
+ *     wrapper/heading — replaces this section's former standalone
+ *     `.features`/`.features__heading`/`.features__intro` rules)
+ *   - components/ui/ContentCard.astro (default "card" variant — Phase 3.1
+ *     merged FeatureCard, ValueProposition, and StepItem into this one
+ *     configurable primitive)
+ *   - components/ui/Icon.astro (via ContentCard — no new icon implementation)
+ *
+ * Reuse:
+ *   Homepage-only composition. ContentCard itself (not this file) is the
+ *   reusable unit for future products/pages.
+ *
+ * Accessibility Notes:
+ *   - `<section aria-labelledby="features-heading">` landmark, wired via
+ *     Section's `ariaLabelledby` + SectionHeader's `id`.
+ *   - Cards are unordered (no inherent sequence, unlike How It Works), so
+ *     this uses `<ul role="list">` — same defensive role="list" pattern
+ *     used elsewhere in this project to guard the Safari/VoiceOver bug
+ *     that drops list semantics when `list-style` is removed.
+ *   - Heading hierarchy: this section's `<h2>` (via SectionHeader) is a
+ *     sibling of Why/How It Works' `<h2>`s; each card title is an `<h3>` —
+ *     no skipped levels.
+ *   - No new JavaScript, no new animation — no regression risk.
+ */
+import Section from '@components/ui/Section.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import ContentCard from '@components/ui/ContentCard.astro';
+import type { IconName } from '@/types/icon';
+import { siteConfig } from '@config/site';
+
+interface FeatureData {
+  icon: IconName;
+  title: string;
+  description: string;
+  badge?: string;
+}
+
+const features: FeatureData[] = [
+  {
+    icon: 'list',
+    title: 'Study by Topic',
+    description:
+      'Work through USCIS Civics Test questions organized by topic, so you can focus on American government, history, or civics separately.',
+  },
+  {
+    icon: 'clipboard-check',
+    title: 'Mock Tests',
+    description:
+      'Take a full mock test that mirrors the format of the real USCIS Civics Test, to see where you stand before interview day.',
+  },
+  {
+    icon: 'cards',
+    title: 'Flashcards',
+    description:
+      "Review official questions and answers as flashcards, a simple way to reinforce what you've already studied.",
+  },
+  {
+    icon: 'message-circle',
+    title: 'Interview Mode',
+    description:
+      'Practice answering questions in an interview-style format designed to prepare you for the citizenship interview.',
+    badge: 'Coming Soon',
+  },
+  {
+    icon: 'bar-chart',
+    title: 'Progress Tracking',
+    description:
+      "See which topics you've covered and how your practice test results are trending over time.",
+  },
+  {
+    icon: 'rotate-ccw',
+    title: 'Review Incorrect Answers',
+    description:
+      "Revisit the practice questions you've gotten wrong, with the explanation right alongside the correct answer.",
+  },
+];
+---
+
+<Section ariaLabelledby="features-heading">
+  <SectionHeader
+    id="features-heading"
+    title={`What ${siteConfig.name} Provides`}
+    description="Everything you need to prepare for the U.S. Citizenship Test, in one place."
+  />
+  <ul class="grid-list grid-list--cols-3" role="list">
+    {
+      features.map((feature) => (
+        <li>
+          <ContentCard
+            icon={feature.icon}
+            title={feature.title}
+            description={feature.description}
+            badge={feature.badge}
+            class="feature-card"
+          />
+        </li>
+      ))
+    }
+  </ul>
+</Section>

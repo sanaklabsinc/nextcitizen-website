@@ -1,0 +1,67 @@
+---
+/**
+ * NavMenu
+ *
+ * Purpose:
+ *   The primary navigation link list rendered inside Header.astro. Marks
+ *   the current page with `aria-current="page"` and excludes the Download
+ *   route, which Header renders separately as a persistent CTA button.
+ *
+ * Props: none — entirely data-driven from routes.ts and the current
+ * request URL.
+ *
+ * Dependencies:
+ *   - data/routes.ts (primaryRoutes; Download is excluded via its
+ *     `ctaOnly` flag rather than a hard-coded path match — Phase 3.1)
+ *   - utils/url.ts `withBase`, `resolveCurrentPath`
+ *
+ * Reuse:
+ *   The `ctaOnly`-aware filtering and current-page detection are generic;
+ *   the actual link set comes entirely from routes.ts, so a future
+ *   SanAkLabs product reuses this file by supplying its own routes.ts, not
+ *   by editing this component.
+ *
+ * Accessibility Notes:
+ *   - `<nav aria-label="Primary">` landmark, distinct from Footer's
+ *     `aria-label="Legal"` nav landmark.
+ *   - `aria-current="page"` on the active link only, computed from
+ *     `resolveCurrentPath(Astro.url)` — the same base-stripping logic
+ *     BaseLayout uses to resolve a page's path (Phase 3.1), so both stay
+ *     correct together instead of drifting independently.
+ *   - On mobile, this `<nav>` is the panel MobileNavToggle's button
+ *     controls via `aria-controls="primary-navigation"` — see
+ *     MobileNavToggle.astro.
+ */
+import { primaryRoutes } from '@data/routes';
+import { withBase, resolveCurrentPath } from '@utils/url';
+
+// "Download" is rendered separately as the persistent nav CTA button (see
+// Header.astro), per docs/HOMEPAGE_SPECIFICATION.md — it must stay visible
+// even when this link list collapses into the mobile menu, so it's excluded
+// from the plain-link list rather than duplicated as a 7th item. Phase 3.1:
+// excluded via the `ctaOnly` flag on the route data itself, not by matching
+// the '/download' string (see routes.ts).
+const links = primaryRoutes.filter((route) => !route.ctaOnly);
+
+// "Current page" detection now shares the same base-stripping logic
+// BaseLayout uses to resolve a page's path (Phase 3.1) instead of a second,
+// separately-maintained copy of it.
+const currentPath = resolveCurrentPath(Astro.url);
+---
+
+<nav class="primary-nav" id="primary-navigation" aria-label="Primary">
+  <ul>
+    {
+      links.map((route) => {
+        const isCurrent = currentPath === route.path;
+        return (
+          <li>
+            <a href={withBase(route.path)} aria-current={isCurrent ? 'page' : undefined}>
+              {route.label}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

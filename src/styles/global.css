@@ -1,0 +1,1127 @@
+/* ==========================================================================
+   nextCitizen — Global Stylesheet
+   Plain CSS only (no framework). Colors below implement the official palette
+   defined in docs/BRAND_GUIDELINES.md (Phase 1's neutral placeholder palette
+   has been replaced now that branding is finalized).
+   ========================================================================== */
+
+:root {
+  /* ---- Color: docs/BRAND_GUIDELINES.md palette ---------------------------- */
+  /* Background (#F8FAFC) is the page-level tone; Card (#FFFFFF) is the
+     elevated-surface tone. Both are used via --color-bg / --color-bg-subtle
+     respectively so existing call sites don't need to change. */
+  --color-bg: #f8fafc;
+  --color-bg-subtle: #ffffff;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-border: #d9dce1;
+  --color-primary: #1b365d;
+  --color-primary-hover: #152c4a;
+  --color-primary-contrast: #ffffff;
+  --color-focus-ring: var(--color-primary);
+  --color-link: var(--color-primary);
+  --color-link-visited: var(--color-primary-hover);
+
+  /* Secondary/accent/status colors from Brand Guidelines. Not used by
+     Navigation or Hero (Phase 2.1) but tokenized now since they're part of
+     the documented palette and later sections (Trust, notifications,
+     achievements) will need them. */
+  --color-secondary: #c0392b; /* American Red — sparingly, per Brand Guidelines */
+  --color-accent-gold: #d4a017;
+  --color-success: #2e7d32;
+
+  /* ---- Spacing scale ------------------------------------------------------ */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6rem;
+
+  /* ---- Typography ---------------------------------------------------------- */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.375rem;
+  --font-size-xl: 1.75rem;
+  --font-size-2xl: 2.25rem;
+  --font-size-3xl: 3rem;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.55;
+
+  /* ---- Radius --------------------------------------------------------------- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem; /* 16px — matches Brand Guidelines' Card radius */
+  --radius-button: 0.75rem; /* 12px — matches Brand Guidelines' Button radius */
+  --radius-full: 999px;
+
+  /* ---- Layout --------------------------------------------------------------- */
+  --container-width: 72rem;
+  --container-padding: var(--space-md);
+
+  color-scheme: light;
+}
+
+/* Dark-mode palette intentionally left as Phase 1 placeholder values —
+   docs/BRAND_GUIDELINES.md defers an official dark-mode palette to a future
+   revision (see "Future Design Evolution"), so no dark-mode colors are
+   invented here. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #14161a;
+    --color-bg-subtle: #1c1f24;
+    --color-text: #f2f3f5;
+    --color-text-muted: #a7adb6;
+    --color-border: #33373f;
+    --color-primary: #6f9ceb;
+    --color-primary-hover: #8fb3f0;
+    --color-primary-contrast: #0c1116;
+    --color-focus-ring: #6f9ceb;
+    --color-link: var(--color-primary);
+    --color-link-visited: #b39ce8;
+    color-scheme: dark;
+  }
+}
+
+/* ---- Reset --------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  text-rendering: optimizeLegibility;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: var(--line-height-tight);
+  margin: 0 0 var(--space-sm);
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+}
+h2 {
+  font-size: var(--font-size-2xl);
+}
+h3 {
+  font-size: var(--font-size-xl);
+}
+h4 {
+  font-size: var(--font-size-md);
+}
+
+p {
+  margin: 0 0 var(--space-sm);
+}
+
+ul,
+ol {
+  margin: 0 0 var(--space-sm);
+  padding-left: 1.25em;
+}
+
+a {
+  color: var(--color-link);
+  text-decoration-thickness: from-font;
+}
+
+a:visited {
+  color: var(--color-link-visited);
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* ---- Accessibility --------------------------------------------------------- */
+
+/* Visible focus outline for all interactive elements, keyboard and mouse. */
+:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Respect reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip-to-content link: hidden until focused. */
+.skip-link {
+  position: absolute;
+  top: -3rem;
+  left: var(--space-sm);
+  z-index: 1000;
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: var(--space-2xs) var(--space-sm);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  transition: top 0.15s ease-in-out;
+}
+
+.skip-link:focus {
+  top: var(--space-sm);
+}
+
+/* ---- Layout helpers -------------------------------------------------------- */
+
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding-inline: var(--container-padding);
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* ---- Design system primitives -----------------------------------------------
+   Shared by components/ui/Section.astro, SectionHeader.astro, and any
+   future section. Extracted here because Why/How It Works/Features each
+   originally declared byte-for-byte identical padding/border/heading/intro
+   rules under three different class names — see components/ui/Section.astro
+   and SectionHeader.astro for the "why" behind the split. */
+
+.section {
+  padding-block: var(--space-2xl);
+  border-top: 1px solid var(--color-border);
+}
+
+.section--subtle {
+  background-color: var(--color-bg-subtle);
+}
+
+/* Phase 3.1: opt-out for Section's border prop (default true, unchanged
+   for every existing consumer). Lets a page-opening section render without
+   a top divider instead of forcing every such consumer to bypass Section
+   entirely, the way Hero.astro currently does. */
+.section--no-border {
+  border-top: none;
+}
+
+.section-header {
+  margin-bottom: var(--space-xl);
+}
+
+.section-header--center {
+  text-align: center;
+}
+
+.section-header--left {
+  text-align: left;
+}
+
+.section-header__title {
+  margin-bottom: var(--space-sm);
+}
+
+.section-header__description {
+  color: var(--color-text-muted);
+  margin-bottom: 0;
+}
+
+.section-header--center .section-header__description {
+  margin-inline: auto;
+}
+
+.section-header__description--narrow {
+  max-width: 48ch;
+}
+
+.section-header__description--default {
+  max-width: 60ch;
+}
+
+.section-header__description--wide {
+  max-width: 72ch;
+}
+
+/* Shared "unordered grid of cards" layout — Why (4 cols) and Features (3
+   cols) both need this same base, differing only in desktop column count. */
+.grid-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+.grid-list > li {
+  display: flex;
+}
+
+@media (min-width: 640px) {
+  .grid-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-list--cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid-list--cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Shared eyebrow label — used by Hero, SectionHeader (and, through it,
+   PageHero for non-homepage pages). */
+.eyebrow {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+/* ---- Site header / footer / nav -------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 900; /* below .skip-link's 1000, above page content */
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  padding-block: var(--space-sm);
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  /* Ensures the actions cluster (Download button + mobile toggle) stays
+     flush right even when .primary-nav is display:none (mobile, collapsed)
+     and so contributes no margin of its own to the flex layout. */
+  margin-inline-start: auto;
+}
+
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-weight: 700;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.site-logo__icon {
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.primary-nav {
+  /* Pushes the nav (and the actions cluster after it) flush right, leaving
+     the logo flush left — avoids an extra wrapper element just for layout. */
+  margin-inline-start: auto;
+}
+
+.primary-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.primary-nav a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+}
+
+.primary-nav a[aria-current='page'] {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ---- Mobile navigation toggle ------------------------------------------------ */
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.nav-toggle__icon,
+.nav-toggle__icon::before,
+.nav-toggle__icon::after {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: var(--color-text);
+  border-radius: var(--radius-full);
+}
+
+.nav-toggle__icon {
+  position: relative;
+}
+
+.nav-toggle__icon::before,
+.nav-toggle__icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.nav-toggle__icon::before {
+  top: -6px;
+}
+
+.nav-toggle__icon::after {
+  top: 6px;
+}
+
+@media (max-width: 767.98px) {
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .primary-nav {
+    display: none;
+    width: 100%;
+    margin-inline-start: 0;
+    order: 3;
+  }
+
+  .primary-nav.is-open {
+    display: block;
+  }
+
+  .primary-nav ul {
+    flex-direction: column;
+    gap: 0;
+    padding-block: var(--space-sm) 0;
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--space-sm);
+  }
+
+  .primary-nav li {
+    padding-block: var(--space-2xs);
+  }
+}
+
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.site-footer__inner {
+  padding-block: var(--space-lg);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-lg);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-footer a {
+  color: inherit;
+}
+
+.site-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.site-footer__brand p {
+  margin: 0;
+}
+
+.site-footer__icon {
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.site-footer__legal-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  padding: var(--space-3xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-subtle);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* variant modifiers reuse existing tokenized colors only — no new colors. */
+.badge--success {
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.badge--accent {
+  border-color: var(--color-accent-gold);
+  color: var(--color-accent-gold);
+}
+
+/* ---- Buttons ----------------------------------------------------------------
+   Per docs/BRAND_GUIDELINES.md: Primary = filled Navy, white text, 12px
+   radius, hover = subtle elevation only (no color shift). Secondary = white
+   background, Navy border + text, same radius. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  min-height: 44px;
+  padding-inline: var(--space-md);
+  padding-block: var(--space-xs);
+  border-radius: var(--radius-button);
+  border: 2px solid transparent;
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  text-decoration: none;
+  line-height: 1;
+  transition: box-shadow 0.15s ease-in-out;
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.btn--primary:visited {
+  color: var(--color-primary-contrast);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 6px 14px rgb(27 54 93 / 25%);
+}
+
+.btn--secondary {
+  background-color: transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn--secondary:visited {
+  color: var(--color-primary);
+}
+
+.btn--secondary:hover {
+  box-shadow: 0 2px 8px rgb(27 54 93 / 12%);
+}
+
+/* ---- Hero --------------------------------------------------------------- */
+
+.hero {
+  padding-block: var(--space-2xl);
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.hero__subheadline {
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  max-width: 55ch;
+  margin-bottom: var(--space-md);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.hero__media {
+  justify-self: center;
+  width: 100%;
+  max-width: 280px;
+}
+
+.hero__media svg {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 479.98px) {
+  .hero__actions {
+    flex-direction: column;
+  }
+
+  .hero__actions .btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 900px) {
+  .hero__grid {
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--space-2xl);
+  }
+
+  .hero__media {
+    max-width: 360px;
+    justify-self: end;
+  }
+}
+
+/* ---- Card (shared base) ------------------------------------------------------
+   Generic "premium, light-elevation" surface per docs/BRAND_GUIDELINES.md's
+   Cards spec: 16px radius (--radius-lg), very light shadow, generous
+   padding, Card-white surface on the page background. Brand Guidelines
+   doesn't specify an exact shadow value, so this uses a neutral tone
+   derived from the Primary Text color rather than an arbitrary new one.
+
+   Shared by every card-style component via components/ui/Card.astro
+   (ContentCard, and future ones) so the visual treatment
+   and its CSS live in exactly one place. Elevation/border/padding are
+   modifiers so Card.astro's props map directly onto them. */
+
+.card {
+  width: 100%;
+  background-color: var(--color-bg-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 1px 3px rgb(31 41 55 / 8%),
+    0 1px 2px rgb(31 41 55 / 4%);
+}
+
+.card--flat {
+  box-shadow: none;
+}
+
+.card--bordered {
+  border: 1px solid var(--color-border);
+}
+
+.card--padding-sm {
+  padding: var(--space-sm);
+}
+
+.card--padding-md {
+  padding: var(--space-md);
+}
+
+.card--padding-lg {
+  padding: var(--space-lg);
+}
+
+/* Content-typography helpers usable inside any card-like block — including
+   .step below, which has no card chrome but shares the same icon/title/
+   description typography, so it composes these instead of redeclaring
+   them. */
+.card__icon {
+  width: var(--space-lg);
+  height: var(--space-lg);
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.card__title {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--space-2xs);
+}
+
+.card__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: 0;
+}
+
+/* ---- How It Works -----------------------------------------------------------
+   Deliberately NOT styled as cards (no background/shadow on .step) — this
+   section shows a process/flow, and reusing the Why section's card
+   treatment verbatim would blur the distinction between "here are four
+   independent facts" (Why) and "here is one sequential journey" (How It
+   Works). The numbered marker + connecting line carry that distinction
+   instead. Breakpoint (768px) reuses the same value already established
+   for the mobile nav collapse, rather than introducing a new one. */
+
+.how-it-works__list {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+}
+
+.how-it-works__list > li {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  .how-it-works__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Connecting line sits behind the markers; each marker has an opaque
+     background (--color-bg-subtle) that visually "cuts" the line where it
+     passes behind it — avoids fragile per-gap positioning math. */
+  .how-it-works__list::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--space-xl) / 2 - 1px);
+    left: 16.666%;
+    right: 16.666%;
+    height: 2px;
+    background-color: var(--color-border);
+    z-index: 0;
+  }
+}
+
+.step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+.step__marker {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-xl);
+  height: var(--space-xl);
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-subtle);
+  border: 2px solid var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.step__number {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* .step__icon intentionally removed — ContentCard's as="step" variant uses
+   the shared .card__icon class directly (identical rule that used to be
+   duplicated here). */
+
+/* .step__title intentionally removed — ContentCard's as="step" variant
+   uses the shared .card__title class directly (identical font-size/
+   margin-bottom rule that used to be duplicated here). */
+
+/* Additive only: centers the description and constrains its measure.
+   font-size/color/margin-bottom come from the shared .card__description
+   class, applied alongside this one in ContentCard.astro's as="step"
+   variant. */
+.step__description {
+  max-width: 32ch;
+  margin-inline: auto;
+}
+
+/* ---- Features -----------------------------------------------------------
+   Grid layout comes from the shared .grid-list/.grid-list--cols-3 classes
+   (see "Design system primitives" above); card visuals come from
+   components/ui/Card.astro. Only the one feature-specific addition (badge
+   spacing) lives here. */
+
+.feature-card__badge {
+  margin-bottom: var(--space-2xs);
+}
+
+/* ---- Phone frame ----------------------------------------------------------
+   Decorative device chrome only — see components/ui/PhoneFrame.astro. Not
+   consumed anywhere yet (Screenshots section is deferred); added now so
+   that section only has to supply images once it's built. */
+
+.phone-frame {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  margin-inline: auto;
+  aspect-ratio: 9 / 19;
+  padding: var(--space-2xs);
+  background-color: var(--color-text);
+  border-radius: var(--radius-lg);
+}
+
+.phone-frame__notch {
+  position: absolute;
+  top: var(--space-2xs);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30%;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-subtle);
+  z-index: 2;
+}
+
+.phone-frame__screen {
+  position: absolute;
+  inset: var(--space-2xs);
+  overflow: hidden;
+  border-radius: calc(var(--radius-lg) - 4px);
+  background-color: var(--color-bg-subtle);
+}
+
+.phone-frame__screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- Screenshots ----------------------------------------------------------
+   Gallery of real product screenshots inside PhoneFrame mockups (see
+   components/home/Screenshots.astro). Mobile: native horizontal
+   scroll-snap, no JS carousel, sized so the next item visibly peeks in.
+   Tablet (640px+): static 2-column grid — more readable than a scroll
+   region once there's room for it. Desktop (1024px+): asymmetric grid that
+   features the first screenshot more prominently instead of five
+   equally-sized phones in one dense row. */
+
+.screenshot-gallery {
+  display: flex;
+  gap: var(--space-lg);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-block: var(--space-2xs); /* room for the focus outline */
+  margin: 0;
+}
+
+.screenshot-gallery__item {
+  flex: 0 0 78%;
+  max-width: 320px;
+  scroll-snap-align: start;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.screenshot-gallery__item .phone-frame {
+  margin-bottom: var(--space-sm);
+}
+
+.screenshot-gallery__title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  font-weight: 600;
+  margin-bottom: var(--space-3xs);
+}
+
+.screenshot-gallery__caption-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  max-width: 32ch;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .screenshot-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    overflow-x: visible;
+    scroll-snap-type: none;
+  }
+
+  .screenshot-gallery__item {
+    flex: initial;
+    max-width: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .screenshot-gallery {
+    grid-template-columns: 1.3fr 1fr 1fr;
+    grid-template-rows: repeat(2, auto);
+    gap: var(--space-xl);
+  }
+
+  .screenshot-gallery__item--featured {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    justify-content: center;
+  }
+
+  .screenshot-gallery__item--featured .phone-frame {
+    max-width: 320px;
+  }
+}
+
+/* ---- FAQ -------------------------------------------------------------------
+   Native <details>/<summary> — no JS, no accordion library. Reuses the
+   60ch "default" reading measure already established by
+   .section-header__description--default, since this is the same "how wide
+   should a comfortable line of body text be" concern applied to the FAQ
+   column instead of a section intro. The native disclosure marker is left
+   alone — no `list-style`/`::marker` override — since there's no
+   equally-clear replacement indicator to justify hiding it. */
+
+.faq-list {
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--color-border);
+  padding-block: var(--space-sm);
+}
+
+.faq-item:first-child {
+  border-top: 1px solid var(--color-border);
+}
+
+.faq-item__question {
+  min-height: 44px;
+  padding-block: var(--space-2xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.faq-item__answer {
+  padding-block-start: var(--space-2xs);
+  color: var(--color-text-muted);
+}
+
+.faq-item__answer p {
+  margin-bottom: var(--space-sm);
+}
+
+.faq-item__answer p:last-child {
+  margin-bottom: 0;
+}
+
+.faq-item__source {
+  font-size: var(--font-size-sm);
+}
+
+/* ---- Download CTA ----------------------------------------------------------
+   The homepage's single conversion section. Navy background reuses the
+   exact --color-primary/--color-primary-contrast pairing already proven by
+   .btn--primary elsewhere on the site — not a new, untested color
+   combination. Two contrast fixes are required specifically because of
+   that dark background (documented in DownloadCta.astro's doc header):
+   the primary button needs an inverted (light) treatment since the
+   ordinary navy-on-navy button would be unreadable, and the focus ring
+   color needs a local override for the same reason. Both are scoped to
+   `.download-cta` only — no other section or Button consumer is
+   affected. */
+
+.download-cta {
+  --color-focus-ring: var(--color-primary-contrast);
+  text-align: center;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.download-cta .eyebrow,
+.download-cta .section-header__title,
+.download-cta .section-header__description {
+  color: var(--color-primary-contrast);
+}
+
+.download-cta__action {
+  margin-bottom: var(--space-lg);
+}
+
+.download-cta .btn--primary {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-primary);
+}
+
+.download-cta .btn--primary:visited {
+  color: var(--color-primary);
+}
+
+.download-cta .btn--primary:hover {
+  box-shadow: 0 6px 14px rgb(0 0 0 / 25%);
+}
+
+.reassurance-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm) var(--space-lg);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--font-size-sm);
+}
+
+.reassurance-list__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+}
+
+.reassurance-list__icon {
+  width: var(--space-md);
+  height: var(--space-md);
+  flex-shrink: 0;
+}
+
+/* ---- Legal content (Privacy, Disclaimer) ------------------------------------
+   Long-form policy prose reuses the same 60ch reading measure already
+   established by .faq-list above — the same "comfortable line length for
+   long-form content" concern from docs/BRAND_GUIDELINES.md Typography
+   guidance, applied here instead of to the FAQ column. Headings/paragraphs/
+   lists otherwise rely entirely on the base element styles (h1–h4, p, ul)
+   defined at the top of this file — no new type styles are introduced. */
+
+.legal-content {
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+.legal-content__updated {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.legal-content h2 {
+  margin-top: var(--space-xl);
+}
+
+.legal-content h2:first-of-type {
+  margin-top: 0;
+}
+
+/* ---- Contact ------------------------------------------------------------
+   Support cards reuse .card__icon/.card__title/.card__description (see
+   Card.astro/ContentCard.astro above) so they render identically to a
+   ContentCard; only the extra action link and page-level note below need
+   their own rules. */
+
+.contact-card__action {
+  margin-top: var(--space-sm);
+  font-weight: 600;
+}
+
+.contact-card__note {
+  max-width: 60ch;
+  margin-inline: auto;
+  margin-top: var(--space-lg);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.contact-play {
+  margin-top: var(--space-xl);
+  text-align: center;
+}
+
+.contact-play__text {
+  margin-bottom: var(--space-sm);
+}
+
+/* ---- Single-action pages (404, Download redirect) --------------------- */
+
+.page-action {
+  text-align: center;
+}

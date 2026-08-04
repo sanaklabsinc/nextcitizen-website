@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHero from '@components/ui/PageHero.astro';
+import { siteConfig } from '@config/site';
+---
+
+<BaseLayout
+  title="Blog"
+  description={`News and updates about ${siteConfig.name} — coming soon.`}
+  noindex
+>
+  <PageHero
+    eyebrow="Blog"
+    title="Coming Soon"
+    subtitle={`Articles and updates about ${siteConfig.name} will be published here.`}
+  />
+</BaseLayout>

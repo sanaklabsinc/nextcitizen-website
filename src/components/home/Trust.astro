@@ -1,0 +1,132 @@
+---
+/**
+ * Trust
+ *
+ * Purpose:
+ *   Homepage Trust section — docs/HOMEPAGE_SPECIFICATION.md Section 7, "the
+ *   credibility backbone of the homepage." Answers "is this legitimate,
+ *   safe, and honest?" directly, as a calm list of checkable facts rather
+ *   than a sales pitch — per the spec's explicit instruction that this
+ *   section "should feel like a statement of fact, not a sales pitch."
+ *
+ * Props: none — like Why/Features/How It Works, this is a small, fixed,
+ * curated set colocated here rather than pulled from src/data/.
+ *
+ * Content basis (every item below is independently verifiable from this
+ * project, not asserted on faith — see the Phase 5 engineering report for
+ * the evidence trail):
+ *   - Official USCIS Questions: already established throughout the site
+ *     (WhyNextCitizen's "Grounded in the Official Test", Features' "Study
+ *     by Topic", docs/CONTENT_STRATEGY.md).
+ *   - Local Answers: confirmed as a real, current feature — the same
+ *     screen documented in Screenshots.astro's asset manifest.
+ *   - No Government Affiliation: required, explicit disclosure per
+ *     docs/HOMEPAGE_SPECIFICATION.md and docs/CONTENT_STRATEGY.md's Trust
+ *     Building Strategy — one of the most heavily-documented requirements
+ *     in the whole project.
+ *   - Interview Mode: labeled "Coming Soon" via ContentCard's badge prop.
+ *     Phase 6 correction: this card previously read "Designed for Interview
+ *     Preparation" without qualification, which — alongside Features.astro's
+ *     former "Interview Practice" wording — implied a currently-available
+ *     capability that hasn't been confirmed as publicly available. Both are
+ *     now aligned with Screenshots.astro's existing "Coming Soon" framing.
+ *   Deliberately omitted: an offline/"study anywhere" claim (no
+ *   confirmation offline capability exists), a "regular updates" claim (no
+ *   verifiable freshness signal, e.g. a last-reviewed date, exists in this
+ *   project), and a specific privacy-practice claim (no real content
+ *   exists yet at /privacy to verify against) — all three are explicitly
+ *   allowed to be omitted "if uncertain" per this phase's content rules,
+ *   rather than asserted speculatively.
+ *
+ * Dependencies:
+ *   - components/ui/Section.astro, SectionHeader.astro (shared
+ *     wrapper/heading, same as every other homepage section)
+ *   - components/ui/ContentCard.astro (default "card" variant — no new
+ *     card style; same primitive Why/Features already use)
+ *   - components/ui/Icon.astro (reuses `shield-check`/`message-circle`;
+ *     Phase 5 adds `map-pin`/`info` for the two genuinely new concepts)
+ *
+ * Reuse:
+ *   Homepage-only composition, consistent with Hero/WhyNextCitizen/
+ *   HowItWorks/Features/Screenshots.
+ *
+ * Accessibility Notes:
+ *   - `<section aria-labelledby="trust-heading">` landmark, wired via
+ *     Section's `ariaLabelledby` + SectionHeader's `id`, matching every
+ *     other section's pattern — verified unique against every other
+ *     section id already in use (why-heading, how-it-works-heading,
+ *     features-heading, screenshots-heading).
+ *   - `<ul role="list">` (defensive Safari/VoiceOver guard, same pattern
+ *     as WhyNextCitizen/Features) since these four facts have no inherent
+ *     order.
+ *   - Each card's icon is decorative only (Icon.astro sets aria-hidden/
+ *     focusable false); title + description alone carry the full meaning,
+ *     so every card remains completely readable/meaningful with icons
+ *     disabled or unsupported.
+ *   - No new interactive elements, no new JavaScript — keyboard/tab order
+ *     is unaffected.
+ *   - Heading hierarchy: this section's own `<h2>` (via SectionHeader)
+ *     follows Screenshots' `<h2>` as a sibling; each card title is an
+ *     `<h3>` (via ContentCard) — no skipped levels.
+ *
+ * SEO Notes:
+ *   Copy naturally references the U.S. civics test, official USCIS
+ *   questions, local/state-specific answers, and citizenship interview
+ *   preparation, once each, in plain factual language — no keyword
+ *   repetition for density.
+ */
+import Section from '@components/ui/Section.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import ContentCard from '@components/ui/ContentCard.astro';
+import type { IconName } from '@/types/icon';
+import { siteConfig } from '@config/site';
+
+interface TrustItem {
+  icon: IconName;
+  title: string;
+  description: string;
+  badge?: string;
+}
+
+const trustItems: TrustItem[] = [
+  {
+    icon: 'shield-check',
+    title: 'Official USCIS Questions',
+    description: `${siteConfig.name} uses the official USCIS civics question set as the basis for every question and answer.`,
+  },
+  {
+    icon: 'map-pin',
+    title: 'Local Answers',
+    description:
+      'Questions that depend on where you live — like your state capital or U.S. senators — are answered specifically for your state.',
+  },
+  {
+    icon: 'info',
+    title: 'No Government Affiliation',
+    description: `${siteConfig.name} is an independent study tool and is not affiliated with USCIS or the U.S. government.`,
+  },
+  {
+    icon: 'message-circle',
+    title: 'Interview Mode',
+    description: 'An interview-style practice mode to help prepare for the citizenship interview is planned.',
+    badge: 'Coming Soon',
+  },
+];
+---
+
+<Section ariaLabelledby="trust-heading">
+  <SectionHeader
+    id="trust-heading"
+    title="Built on Facts You Can Verify"
+    description={`A few concrete facts about how ${siteConfig.name} works, so you can decide for yourself.`}
+  />
+  <ul class="grid-list" role="list">
+    {
+      trustItems.map((item) => (
+        <li>
+          <ContentCard icon={item.icon} title={item.title} description={item.description} badge={item.badge} />
+        </li>
+      ))
+    }
+  </ul>
+</Section>

@@ -1,0 +1,67 @@
+---
+/**
+ * Footer
+ *
+ * Purpose:
+ *   Site-wide footer: copyright line and the legal link list (Privacy
+ *   Policy, Disclaimer). Rendered once by BaseLayout, on every page.
+ *
+ * Props: none — entirely data-driven from siteConfig and routes.ts.
+ *
+ * Dependencies:
+ *   - components/ui/Container.astro (width/padding of the footer row)
+ *   - data/routes.ts (legalRoutes)
+ *   - utils/url.ts `withBase`
+ *   - public/icons/icon-192.png (Phase 12B brand icon, reused at a small
+ *     display size — same file the header uses, no new asset)
+ *
+ * Reuse:
+ *   Site-specific composition (siteConfig.company in the copyright line,
+ *   routes.ts as the legal-link source), but Container is generic — a
+ *   future SanAkLabs product would rewrite this file's markup/links, not
+ *   its layout dependency.
+ *
+ * Accessibility Notes:
+ *   - Legal links are wrapped in `<nav aria-label="Legal">` so assistive
+ *     tech can distinguish this landmark from the primary navigation.
+ *   - Plain `<ul>`/`<li>`/`<a>` — no custom interactive elements, no
+ *     accessibility surface beyond native link semantics.
+ *   - Phase 12B: the brand icon next to the copyright line is decorative
+ *     (`alt=""`, `aria-hidden`) — the copyright text already names
+ *     SanAkLabs/nextCitizen, so the icon carries no meaning on its own.
+ *     Explicit `width`/`height` prevent layout shift.
+ */
+import Container from '@components/ui/Container.astro';
+import { legalRoutes } from '@data/routes';
+import { siteConfig } from '@config/site';
+import { withBase } from '@utils/url';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <Container class="site-footer__inner">
+    <div class="site-footer__brand">
+      <img
+        class="site-footer__icon"
+        src={withBase('/icons/icon-192.png')}
+        width="20"
+        height="20"
+        alt=""
+        aria-hidden="true"
+      />
+      <p>&copy; {year} {siteConfig.company}. All rights reserved.</p>
+    </div>
+    <nav aria-label="Legal">
+      <ul class="site-footer__legal-list">
+        {
+          legalRoutes.map((route) => (
+            <li>
+              <a href={withBase(route.path)}>{route.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </Container>
+</footer>

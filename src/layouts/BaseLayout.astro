@@ -1,0 +1,65 @@
+---
+import Seo from '@components/seo/Seo.astro';
+import StructuredData from '@components/seo/StructuredData.astro';
+import Header from '@components/layout/Header.astro';
+import Footer from '@components/layout/Footer.astro';
+import { siteConfig } from '@config/site';
+import { withBase, canonicalUrl, resolveCurrentPath } from '@utils/url';
+import '@styles/global.css';
+import type { SeoProps } from '@/types/seo';
+
+// Phase 3.1: `path` is no longer a prop pages must hand-type — it was a
+// second, manually-kept-in-sync source of truth for something Astro's own
+// request URL already knows (NavMenu.astro already proved this pattern
+// works for its aria-current logic). Every page still supplies title/
+// description/noindex/ogImage, but path is derived here instead.
+interface Props extends Omit<SeoProps, 'path'> {}
+
+const { title, description, noindex, ogImage } = Astro.props;
+const path = resolveCurrentPath(Astro.url);
+
+// Organization JSON-LD, site-wide. Only fields backed by real, existing
+// siteConfig data are included — no logo (no dedicated logo asset exists
+// yet in public/, and Google's structured-data guidelines discourage SVG
+// logos, so favicon.svg is deliberately not substituted) and no `sameAs`
+// (siteConfig.social entries are all still empty placeholders). Add both
+// once real assets/handles exist — see docs/CONTENT_STRATEGY.md's
+// Structured data guidance.
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: siteConfig.company,
+  url: canonicalUrl('/'),
+} as const;
+---
+
+<!doctype html>
+<html lang={siteConfig.locale.split('-')[0]}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <Seo title={title} description={description} path={path} noindex={noindex} ogImage={ogImage} />
+    <StructuredData data={organizationSchema} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/icons/favicon.svg')} />
+    {/* Phase 12B: raster fallbacks generated from the approved nextCitizen
+        icon (see tasks/PHASE12B_BRAND_INTEGRATION.md) for browsers/devices
+        that don't use the SVG favicon above. */}
+    <link rel="icon" href={withBase('/favicon.ico')} sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href={withBase('/favicon-16x16.png')} />
+    <link rel="icon" type="image/png" sizes="32x32" href={withBase('/favicon-32x32.png')} />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+    {/* Phase 12A: optional, unused by default — lets a page inject extra
+        <head> tags (e.g. /download's <meta http-equiv="refresh">) without
+        every other page needing to pass anything. */}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <Header />
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

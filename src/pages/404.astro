@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHero from '@components/ui/PageHero.astro';
+import Section from '@components/ui/Section.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig } from '@config/site';
+
+// Phase 12 (Release Candidate): GitHub Pages serves this file for any
+// unmatched path under the site's base path. Added because no 404 route
+// existed anywhere in src/pages — a genuine deployment gap, not a new
+// section/feature. Reuses BaseLayout/PageHero/Section/Button; no new
+// components.
+---
+
+<BaseLayout title="Page Not Found" description={`This page doesn't exist on the ${siteConfig.name} website.`} noindex>
+  <PageHero
+    title="Page Not Found"
+    subtitle="The page you're looking for doesn't exist or may have moved."
+  />
+  <Section border={false}>
+    <div class="page-action">
+      <Button href="/">Back to Home</Button>
+    </div>
+  </Section>
+</BaseLayout>

@@ -1,0 +1,43 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHero from '@components/ui/PageHero.astro';
+import Section from '@components/ui/Section.astro';
+import { siteConfig } from '@config/site';
+
+// Phase 12A: /download now sends visitors to the real, verified Google
+// Play listing (siteConfig.social.googlePlay) instead of showing "Coming
+// Soon". GitHub Pages is purely static (no server-side redirects), so this
+// uses a <meta http-equiv="refresh"> — injected via BaseLayout's optional
+// "head" slot — as the standard static-site redirect mechanism, backed by
+// an always-visible fallback link/button for anyone whose browser doesn't
+// honor the meta refresh (no JavaScript required either way). Stays
+// indexable (no noindex) since this route is the site's intended Google
+// Play discovery entry point per docs/PRODUCT_CONTEXT.md / README.
+---
+
+<BaseLayout title="Download" description={`Get ${siteConfig.name} on Google Play.`}>
+  {
+    siteConfig.social.googlePlay && (
+      <Fragment slot="head">
+        <meta http-equiv="refresh" content={`0; url=${siteConfig.social.googlePlay}`} />
+      </Fragment>
+    )
+  }
+  <PageHero
+    title="Download"
+    subtitle={`Taking you to ${siteConfig.name} on Google Play.`}
+  />
+  <Section border={false}>
+    <div class="page-action">
+      {
+        siteConfig.social.googlePlay ? (
+          <a class="btn btn--primary" href={siteConfig.social.googlePlay}>
+            Get {siteConfig.name} on Google Play
+          </a>
+        ) : (
+          <p>Google Play link coming soon.</p>
+        )
+      }
+    </div>
+  </Section>
+</BaseLayout>

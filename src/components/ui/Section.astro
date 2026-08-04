@@ -1,0 +1,76 @@
+---
+/**
+ * Section
+ *
+ * Purpose:
+ *   Responsible for exactly the concerns of a top-level page section:
+ *   vertical spacing, an optional background variant, an optional anchor
+ *   id, and the full-width `<section>` wrapper itself. It internally uses
+ *   Container so the *section* (and its border/background) can span full
+ *   viewport width while its *content* stays constrained — previously,
+ *   Why/How It Works/Features each combined their section class and
+ *   `container` on the same element, which would have made a future
+ *   background variant (e.g. Trust section on --color-bg-subtle) render as
+ *   a centered box with visible gutters instead of a true full-width band.
+ *   This component fixes that structurally, once, for every section.
+ *
+ * Props:
+ *   - id?: string — DOM id, e.g. for a same-page anchor link.
+ *   - ariaLabelledby?: string — id of the heading that labels this
+ *     section's landmark (typically SectionHeader's heading id).
+ *   - background?: 'default' | 'subtle' — 'default' inherits the page
+ *     background; 'subtle' uses the Card-white surface tone, per
+ *     docs/HOMEPAGE_SPECIFICATION.md's Design Tokens guidance for visually
+ *     separating sections like Trust or Download CTA.
+ *   - border?: boolean — defaults to true (every existing consumer's
+ *     behavior is unchanged). Set to false for a section that opens a page
+ *     (directly below the sticky header, where a top divider reads as a
+ *     stray line) instead of forcing every consumer to bypass Section
+ *     entirely the way Hero.astro currently does — see Phase 3.0/3.1
+ *     architecture review notes for why that workaround existed.
+ *   - class?: string — additional classes for section-specific layout
+ *     (e.g. a component that needs its own grid on top of Section's
+ *     spacing).
+ *
+ * Dependencies:
+ *   - components/ui/Container.astro
+ *
+ * Reuse:
+ *   Generic top-level section wrapper — usable by any current or future
+ *   homepage section, and by non-homepage pages once they move beyond
+ *   Phase 1 placeholder content.
+ *
+ * Accessibility Notes:
+ *   - Renders a `<section>` landmark. Callers must supply `ariaLabelledby`
+ *     pointing at a real heading id inside the slot (this component does
+ *     not enforce that at compile time, but every current consumer pairs
+ *     it with SectionHeader's `id` prop).
+ */
+import Container from '@components/ui/Container.astro';
+
+interface Props {
+  id?: string;
+  ariaLabelledby?: string;
+  background?: 'default' | 'subtle';
+  border?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  ariaLabelledby,
+  background = 'default',
+  border = true,
+  class: className,
+}: Props = Astro.props;
+---
+
+<section
+  id={id}
+  aria-labelledby={ariaLabelledby}
+  class:list={['section', `section--${background}`, border ? null : 'section--no-border', className]}
+>
+  <Container>
+    <slot />
+  </Container>
+</section>

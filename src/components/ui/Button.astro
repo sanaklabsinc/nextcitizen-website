@@ -1,0 +1,30 @@
+---
+/**
+ * Reusable button-styled link, per docs/BRAND_GUIDELINES.md "Buttons" spec.
+ *
+ * Rendered as an <a> rather than a <button> because every current use case
+ * (Download CTA, "See Features") navigates to another route rather than
+ * performing an in-page action — the correct semantic element for that is a
+ * link, not a button, regardless of the visual "button" styling.
+ *
+ * Generalized (not a one-off "DownloadButton") because Brand Guidelines
+ * defines exactly two button styles — Primary and Secondary — reused across
+ * every future CTA in docs/HOMEPAGE_SPECIFICATION.md (Hero, Features "see
+ * all", FAQ "see all", Download CTA section), not just the Nav/Hero download
+ * action.
+ */
+import { withBase } from '@utils/url';
+
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary';
+  class?: string;
+}
+
+const { href, variant = 'primary', class: className } = Astro.props;
+const classes = ['btn', `btn--${variant}`, className].filter(Boolean).join(' ');
+---
+
+<a class={classes} href={withBase(href)}>
+  <slot />
+</a>

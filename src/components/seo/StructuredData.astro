@@ -1,0 +1,54 @@
+---
+/**
+ * StructuredData
+ *
+ * Purpose:
+ *   Generic JSON-LD rendering primitive. Accepts one already-built schema.org
+ *   object and safely serializes it into a `<script type="application/ld+json">`
+ *   tag. Contains zero schema-specific knowledge — no awareness of
+ *   Organization, FAQPage, SoftwareApplication, BreadcrumbList, or any other
+ *   type. Callers build the typed object; this component only renders it.
+ *
+ *   This split matters for this project specifically: docs/CONTENT_STRATEGY.md
+ *   and docs/HOMEPAGE_SPECIFICATION.md both require that structured data
+ *   never contain fabricated values (ratings, review counts, install counts,
+ *   dates, pricing). Keeping this component free of per-schema logic means
+ *   that rule lives entirely at the call site, where the real data (or lack
+ *   of it) is visible — not hidden inside a generator that might be tempted
+ *   to fill gaps with placeholders.
+ *
+ * Props:
+ *   - data: Record<string, unknown> — a single JSON-LD object graph
+ *     (typically including its own `@context`/`@type`). Render multiple
+ *     `<StructuredData>` instances if a page needs more than one schema
+ *     block — simpler and more explicit than teaching this component to
+ *     accept arrays.
+ *
+ * Dependencies: none.
+ *
+ * Reuse:
+ *   The generic rendering primitive for structured data across any current
+ *   or future SanAkLabs site. Future schema types (FAQPage once FAQ content
+ *   is real, BreadcrumbList once a blog/pillar hierarchy exists,
+ *   SoftwareApplication once verifiable app metadata exists) should build
+ *   their typed object elsewhere and pass it in here — this file should not
+ *   grow schema-specific branches.
+ *
+ * Accessibility Notes:
+ *   Not applicable — this renders non-visual, non-interactive metadata with
+ *   no effect on the accessibility tree.
+ *
+ * Security note:
+ *   `<` is escaped to `<` before serialization so a string value
+ *   containing `</script>` can't prematurely close the tag or break out into
+ *   surrounding markup.
+ */
+interface Props {
+  data: Record<string, unknown>;
+}
+
+const { data } = Astro.props;
+const json = JSON.stringify(data).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" set:html={json} is:inline />

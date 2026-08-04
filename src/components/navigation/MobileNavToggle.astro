@@ -1,0 +1,61 @@
+---
+/**
+ * Accessible hamburger toggle for the mobile navigation panel.
+ *
+ * No external JS library — a small vanilla script toggles `aria-expanded`
+ * on this button and an `is-open` class on the `<nav>` it controls (see
+ * NavMenu.astro, id="primary-navigation"). Kept intentionally simple:
+ * - Escape closes the panel and returns focus to this button.
+ * - Opening moves focus to the first nav link.
+ * - The panel auto-closes if the viewport grows past the mobile breakpoint.
+ * A full focus-trap loop was deliberately not added (see
+ * HOMEPAGE_SPECIFICATION.md implementation notes) to keep JS minimal; the
+ * nav sits in normal DOM order directly after this button, so keyboard tab
+ * order remains logical without one.
+ */
+---
+
+<button
+  type="button"
+  class="nav-toggle"
+  id="nav-toggle"
+  aria-expanded="false"
+  aria-controls="primary-navigation"
+>
+  <span class="nav-toggle__icon" aria-hidden="true"></span>
+  <span class="visually-hidden" data-nav-toggle-label>Open menu</span>
+</button>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const nav = document.getElementById('primary-navigation');
+  const label = toggle?.querySelector('[data-nav-toggle-label]');
+
+  if (toggle && nav) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      nav.classList.toggle('is-open', open);
+      if (label) label.textContent = open ? 'Close menu' : 'Open menu';
+    };
+
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      setOpen(!isOpen);
+      if (!isOpen) {
+        nav.querySelector('a')?.focus();
+      }
+    });
+
+    nav.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    const desktopQuery = window.matchMedia('(min-width: 768px)');
+    desktopQuery.addEventListener('change', (event) => {
+      if (event.matches) setOpen(false);
+    });
+  }
+</script>

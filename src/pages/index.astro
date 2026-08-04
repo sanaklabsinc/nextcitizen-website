@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/home/Hero.astro';
+import WhyNextCitizen from '@components/home/WhyNextCitizen.astro';
+import HowItWorks from '@components/home/HowItWorks.astro';
+import Features from '@components/home/Features.astro';
+import Screenshots from '@components/home/Screenshots.astro';
+import Trust from '@components/home/Trust.astro';
+import Faq from '@components/home/Faq.astro';
+import DownloadCta from '@components/home/DownloadCta.astro';
+import { siteConfig } from '@config/site';
+
+// Phase 7: Navigation + Hero + Why nextCitizen + How It Works + Features +
+// Screenshots + Trust + FAQ + Download CTA — the full homepage per
+// docs/HOMEPAGE_SPECIFICATION.md. Screenshots renders nothing until real
+// assets exist in src/assets/screenshots/ (see that folder's README.md) —
+// see Screenshots.astro for why it's still safe to mount unconditionally
+// here. Do not add further sections here without an explicit go-ahead.
+---
+
+<BaseLayout title={siteConfig.tagline} description={siteConfig.description}>
+  <Hero />
+  <WhyNextCitizen />
+  <HowItWorks />
+  <Features />
+  <Screenshots />
+  <Trust />
+  <Faq />
+  <DownloadCta />
+</BaseLayout>

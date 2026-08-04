@@ -1,0 +1,48 @@
+---
+/**
+ * PhoneFrame
+ *
+ * Purpose:
+ *   Reusable device-mockup chrome for displaying app screenshots. Built
+ *   now, ahead of the Screenshots section (explicitly deferred — this
+ *   phase stops before building it), so that when it is built the section
+ *   only has to provide real screenshot images into this frame rather than
+ *   the frame being designed alongside hardcoded images later. No image
+ *   content is hardcoded here or anywhere in this component.
+ *
+ * Props:
+ *   - class?: string — additional classes for placement/sizing within a
+ *     parent layout (e.g. a screenshot gallery grid).
+ *
+ * Dependencies: none.
+ *
+ * Reuse:
+ *   Generic — any current or future page needing a device-style frame
+ *   around an image (Screenshots section, a future Media Kit page, a
+ *   future product's own mockups) can reuse this unchanged.
+ *
+ * Accessibility Notes:
+ *   - This component is intentionally "dumb" about accessibility: it adds
+ *     no ARIA role and makes no claims about the slotted content, because
+ *     doing so could shadow or conflict with the real accessible name the
+ *     slotted content should carry (e.g. an <img alt="..."> screenshot).
+ *     The consumer is responsible for giving whatever is slotted in its
+ *     own correct alt text/caption — this frame is purely decorative
+ *     chrome around it, matching how a physical picture frame contributes
+ *     no meaning of its own.
+ *   - The notch element is `aria-hidden` since it's purely decorative
+ *     device styling.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['phone-frame', className]}>
+  <div class="phone-frame__notch" aria-hidden="true"></div>
+  <div class="phone-frame__screen">
+    <slot />
+  </div>
+</div>

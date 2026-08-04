@@ -1,0 +1,222 @@
+---
+/**
+ * Faq
+ *
+ * Purpose:
+ *   Homepage FAQ section — docs/HOMEPAGE_SPECIFICATION.md Section 8. A
+ *   curated 6-8 item subset (not the exhaustive FAQ, which belongs on the
+ *   future full `/faq` page) answering the practical questions most likely
+ *   to block a qualified visitor from trusting, understanding, or
+ *   downloading nextCitizen — affiliation, official sourcing, what the app
+ *   actually includes, and where to go for authoritative government
+ *   information.
+ *
+ * Props: none — like every other homepage section, this is a small, fixed,
+ * curated set colocated here rather than pulled from src/data/. Per this
+ * phase's explicit Data Architecture guidance: the exhaustive `/faq` page
+ * (not built yet) will likely have a different, larger scope, so there is
+ * no genuine current consumer for this exact 8-item set anywhere else —
+ * colocating it here (rather than a new src/data/faq.ts or a content
+ * collection) avoids inventing shared infrastructure for a single,
+ * non-reused array.
+ *
+ * Content basis (every answer is independently checkable against this
+ * project, not asserted on faith):
+ *   - "What is nextCitizen?": matches siteConfig.description verbatim.
+ *   - "Official USCIS material?" / "Government affiliation?": match Trust
+ *     section's already-established, independently-verified statements.
+ *   - "Test version supported?": deliberately does NOT assert a specific
+ *     version (e.g. "2008" vs "2025") — no such fact exists anywhere in
+ *     this project, and USCIS's own civics-test versioning is genuinely
+ *     applicant-dependent (which test an applicant takes depends on their
+ *     Form N-400 filing date). Answering honestly means pointing to USCIS
+ *     as the authoritative source rather than guessing.
+ *   - "Local answers?" / "Mock tests and flashcards?": match Features.astro
+ *     and Trust.astro's already-established feature descriptions.
+ *   - "Is Interview Mode available?": "Coming Soon," consistent with the
+ *     Phase 6 correction applied to Features.astro and Trust.astro.
+ *   - "Where can I find official citizenship information?": points to
+ *     USCIS.gov, the actual official government source, per this phase's
+ *     explicit instruction to identify USCIS as the authoritative source
+ *     for immigration guidance.
+ *   Not guessed at anywhere: price, ads, offline access, personal-data
+ *   handling, supported languages, iOS availability, account requirements,
+ *   or update frequency — none of these are verifiable from this project,
+ *   so none are mentioned.
+ *
+ * Dependencies:
+ *   - components/ui/Section.astro, SectionHeader.astro (shared
+ *     wrapper/heading, same as every other homepage section)
+ *   - components/seo/StructuredData.astro (generic JSON-LD renderer — see
+ *     Phase 3.0; this is its first `FAQPage` consumer)
+ *
+ * Phase 12A: the "See all frequently asked questions" link to `/faq` was
+ * removed — `/faq` is an unfinished route with no primary-nav entry as of
+ * this phase (see routes.ts), so no public CTA should point to it. This
+ * homepage section is the sufficient FAQ experience for Version 1 per
+ * tasks/PHASE12A_LAUNCH_BLOCKERS.md.
+ *
+ * Component decisions:
+ *   - Native `<details>`/`<summary>` instead of a custom accordion: zero
+ *     JavaScript, built-in keyboard operability (Enter/Space on a focused
+ *     `<summary>`), built-in expanded/collapsed semantics exposed to
+ *     assistive tech automatically — no `aria-expanded`/`aria-controls`
+ *     needed, unlike a hand-built accordion. The native disclosure marker
+ *     is left untouched (no `list-style`/`::marker` override), since there
+ *     was no equally clear replacement indicator to justify hiding it.
+ *   - `ContentCard` is NOT used here. Its icon/title/description Card-chrome
+ *     shape doesn't correspond to a disclosure widget's summary/content
+ *     structure, and forcing a Q&A into it would work against choosing the
+ *     simplest accessible implementation.
+ *   - `Icon` is NOT used here. There's no natural per-question icon concept
+ *     (unlike Trust/Features' one-concept-per-card shape), and adding one
+ *     would mean overriding `<summary>`'s native marker for no accessibility
+ *     or UX benefit.
+ *   - A single typed `faqItems` array is the one source of truth for both
+ *     the rendered markup and the `FAQPage` JSON-LD below — generated from
+ *     it, not hand-duplicated.
+ *   - `sourceLink` (used by two items) is a separate, optional field, kept
+ *     out of the `answer` string and out of the JSON-LD entirely. This
+ *     avoids embedding HTML inside `Answer.text` (the schema stays plain,
+ *     unambiguous text) while still letting the rendered UI include a real,
+ *     clickable link to USCIS.gov — the link is a UI affordance, not part
+ *     of "the answer" itself.
+ *
+ * Accessibility Notes:
+ *   - `<section aria-labelledby="faq-heading">` landmark, matching every
+ *     other section's pattern; id verified unique against every other
+ *     section/element id already on the page.
+ *   - Each `<details id={"faq-" + item.id}>` id is derived from a unique,
+ *     hand-checked slug — verified unique against each other and against
+ *     every other id already on the homepage.
+ *   - `:focus-visible` (global) already covers `<summary>` since it's a
+ *     native focusable element — no new focus-style CSS needed.
+ *   - No JavaScript, no ARIA beyond what `<details>`/`<summary>` already
+ *     provide natively.
+ *   - Heading hierarchy: this section's own `<h2>` (via SectionHeader)
+ *     follows Trust's `<h2>` as a sibling; questions are `<summary>` text,
+ *     not headings, so no heading level is introduced or skipped.
+ *
+ * SEO Notes:
+ *   Answers naturally reference the U.S. citizenship test, USCIS civics
+ *   questions, citizenship interview, local/state-specific answers, mock
+ *   tests, flashcards, and Interview Mode — each grounded in an actual
+ *   question a visitor would ask, not repeated for density. `FAQPage`
+ *   JSON-LD is added because the full question/answer text is already
+ *   present in crawlable, server-rendered homepage HTML (a `<details>`
+ *   element's content is present in the DOM/HTML source regardless of its
+ *   open/closed state) — matching the one condition
+ *   docs/HOMEPAGE_SPECIFICATION.md sets for adding this schema.
+ */
+import Section from '@components/ui/Section.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import StructuredData from '@components/seo/StructuredData.astro';
+import { siteConfig } from '@config/site';
+
+interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+  sourceLink?: { href: string; label: string };
+}
+
+const faqItems: FaqItem[] = [
+  {
+    id: 'what-is-nextcitizen',
+    question: `What is ${siteConfig.name}?`,
+    answer:
+      'nextCitizen is a study companion app that helps you prepare for the USCIS Civics Test and citizenship interview, with official questions explained in plain English.',
+  },
+  {
+    id: 'official-questions',
+    question: 'Are the civics questions based on official USCIS material?',
+    answer: 'Yes. nextCitizen uses the official USCIS civics question set as the basis for every question and answer in the app.',
+  },
+  {
+    id: 'government-affiliation',
+    question: 'Is nextCitizen affiliated with USCIS or the U.S. government?',
+    answer: 'No. nextCitizen is an independent study tool and is not affiliated with USCIS or the U.S. government.',
+  },
+  {
+    id: 'test-version',
+    question: 'Which version of the citizenship test does the app support?',
+    answer:
+      "nextCitizen is built around the official USCIS civics question set. USCIS periodically updates test versions and eligibility rules, so for the most current, authoritative details on which test applies to you, visit the official USCIS website.",
+    sourceLink: {
+      href: 'https://www.uscis.gov/citizenship/learn-about-citizenship/the-naturalization-interview-and-test',
+      label: 'The Naturalization Interview and Test (USCIS.gov)',
+    },
+  },
+  {
+    id: 'local-answers',
+    question: 'Can I practice state-specific or local answers?',
+    answer:
+      'Yes. Questions that depend on where you live — like your state capital or U.S. senators — are answered specifically for your state.',
+  },
+  {
+    id: 'mock-tests-flashcards',
+    question: 'Does the app include mock tests and flashcards?',
+    answer:
+      'Yes. nextCitizen includes a mock test that mirrors the format of the real USCIS civics test, along with flashcards for reviewing official questions and answers.',
+  },
+  {
+    id: 'interview-mode',
+    question: 'Is Interview Mode available?',
+    answer:
+      'Not yet. Interview Mode — practicing questions in an interview-style format — is planned but not currently available. It will be clearly marked once it launches.',
+  },
+  {
+    id: 'official-info',
+    question: 'Where can I find official citizenship information?',
+    answer:
+      'For official guidance on citizenship, naturalization, and the interview process, visit the official USCIS website.',
+    sourceLink: {
+      href: 'https://www.uscis.gov/citizenship',
+      label: 'Citizenship Resource Center (USCIS.gov)',
+    },
+  },
+];
+
+// FAQPage JSON-LD, generated directly from faqItems above — same source
+// of truth as the rendered markup, not a hand-duplicated copy. sourceLink
+// is intentionally not included: it's a UI affordance, not part of the
+// answer's text.
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+} as const;
+---
+
+<Section ariaLabelledby="faq-heading">
+  <SectionHeader
+    id="faq-heading"
+    title="Frequently Asked Questions"
+    description={`Quick answers to the most common questions about ${siteConfig.name}.`}
+  />
+  <div class="faq-list">
+    {
+      faqItems.map((item) => (
+        <details class="faq-item" id={`faq-${item.id}`}>
+          <summary class="faq-item__question">{item.question}</summary>
+          <div class="faq-item__answer">
+            <p>{item.answer}</p>
+            {item.sourceLink && (
+              <p class="faq-item__source">
+                <a href={item.sourceLink.href}>{item.sourceLink.label}</a>
+              </p>
+            )}
+          </div>
+        </details>
+      ))
+    }
+  </div>
+</Section>
+<StructuredData data={faqSchema} />

@@ -1,0 +1,72 @@
+---
+/**
+ * Homepage "Why nextCitizen" section — per docs/HOMEPAGE_SPECIFICATION.md
+ * Section 3. Answers "why trust this instead of another app" through four
+ * concrete, verifiable statements, not feature marketing (see that spec's
+ * Content Guidelines for the no-hype, no-superlative constraint this
+ * content was written against).
+ *
+ * The four items are a small, fixed, curated set — not a generic content
+ * collection — so they're colocated here rather than pulled from
+ * src/data/, matching how Hero.astro colocates its own default copy.
+ *
+ * Composes the shared Section/SectionHeader primitives (Phase 2.5) instead
+ * of its own `.why`/`.why__heading`/`.why__intro` markup — those were
+ * byte-for-byte identical to How It Works' and Features' equivalents.
+ */
+import Section from '@components/ui/Section.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import ContentCard from '@components/ui/ContentCard.astro';
+import type { IconName } from '@/types/icon';
+import { siteConfig } from '@config/site';
+
+interface ValuePropData {
+  icon: IconName;
+  title: string;
+  description: string;
+}
+
+const valueProps: ValuePropData[] = [
+  {
+    icon: 'shield-check',
+    title: 'Grounded in the Official Test',
+    description:
+      'Every question and explanation is grounded in the official USCIS Civics Test, so you always know you’re studying the right material.',
+  },
+  {
+    icon: 'clock',
+    title: 'Study at Your Own Pace',
+    description:
+      'Short, focused study sessions fit around work and family, with no fixed schedule required to prepare for your citizenship interview.',
+  },
+  {
+    icon: 'lightbulb',
+    title: 'Built for Understanding, Not Memorization',
+    description:
+      'Explanations focus on why an answer is correct, helping the material stay with you well past test day.',
+  },
+  {
+    icon: 'book-open',
+    title: 'Clear, Plain English Throughout',
+    description:
+      'Every explanation is written in direct, simple English, because preparing for the civics test shouldn’t also mean decoding difficult language.',
+  },
+];
+---
+
+<Section ariaLabelledby="why-heading">
+  <SectionHeader
+    id="why-heading"
+    title={`Why ${siteConfig.name}`}
+    description={`${siteConfig.name} is designed around how people actually prepare for the USCIS Civics Test and citizenship interview.`}
+  />
+  <ul class="grid-list grid-list--cols-4" role="list">
+    {
+      valueProps.map((item) => (
+        <li>
+          <ContentCard icon={item.icon} title={item.title} description={item.description} />
+        </li>
+      ))
+    }
+  </ul>
+</Section>

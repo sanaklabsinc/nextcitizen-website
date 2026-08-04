@@ -1,0 +1,47 @@
+---
+/**
+ * Badge
+ *
+ * Purpose:
+ *   Small reusable status label — e.g. a future "New," "Coming Soon,"
+ *   "Beta," or "Verified" marker. Wraps the `.badge` pill styling that
+ *   already existed for the Phase 1 "Coming Soon" placeholder, so there is
+ *   exactly one badge implementation instead of ad hoc `<span>`s
+ *   reappearing wherever a label is needed (ContentCard's optional `badge`
+ *   prop renders through this component).
+ *
+ * Props:
+ *   - variant?: 'neutral' | 'success' | 'accent' — defaults to 'neutral'
+ *     (the existing gray pill). 'success' and 'accent' reuse the
+ *     already-tokenized `--color-success` and `--color-accent-gold` from
+ *     docs/BRAND_GUIDELINES.md — no new colors introduced. 'accent'
+ *     Gold is reserved by Brand Guidelines for achievement/premium
+ *     moments (e.g. "New"), 'success' for confirmed/positive states (e.g.
+ *     "Verified"); plain status words like "Coming Soon" should stay
+ *     'neutral'.
+ *   - class?: string — additional classes for placement within a parent
+ *     (e.g. ContentCard's `feature-card__badge` spacing).
+ *
+ * Dependencies: none.
+ *
+ * Reuse:
+ *   Fully generic; safe for any future product's status labels.
+ *
+ * Accessibility Notes:
+ *   - Renders as a `<span>` with real text content — meaning is carried by
+ *     the text itself, never by color alone, satisfying WCAG's
+ *     don't-rely-on-color-alone guidance automatically.
+ *   - Not focusable/interactive — purely a label, so it introduces no
+ *     keyboard or screen-reader interaction surface.
+ */
+interface Props {
+  variant?: 'neutral' | 'success' | 'accent';
+  class?: string;
+}
+
+const { variant = 'neutral', class: className } = Astro.props;
+---
+
+<span class:list={['badge', `badge--${variant}`, className]}>
+  <slot />
+</span>

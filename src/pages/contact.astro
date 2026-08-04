@@ -1,0 +1,116 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHero from '@components/ui/PageHero.astro';
+import Section from '@components/ui/Section.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import Card from '@components/ui/Card.astro';
+import Icon from '@components/ui/Icon.astro';
+import type { IconName } from '@/types/icon';
+import { siteConfig } from '@config/site';
+
+// Phase 11: replaces the Phase 1 "Coming Soon" placeholder with the real
+// Contact page. Static page only — no form, no backend, per this phase's
+// explicit scope.
+//
+// ContentCard is not used for the four support cards below: its `href`
+// prop always resolves through `withBase()` (see components/ui/ContentCard
+// .astro), which is correct for internal routes but would corrupt an
+// external `mailto:` or `https://` link. Every card here needs a real
+// external link (email or USCIS.gov), so the cards are composed directly
+// from Card + Icon instead, reusing the exact `card__icon`/`card__title`/
+// `card__description` classes ContentCard itself renders (see global.css)
+// so no new visual style is introduced. This mirrors Faq.astro's existing
+// pattern of rendering external links as plain anchors rather than forcing
+// them through a base-aware helper.
+const contactEmail = 'sanaklabs@gmail.com';
+
+interface SupportCard {
+  icon: IconName;
+  title: string;
+  description: string;
+  actionHref: string;
+  actionLabel: string;
+}
+
+const supportCards: SupportCard[] = [
+  {
+    icon: 'message-circle',
+    title: 'General Support',
+    description:
+      "For general questions, website feedback, or questions about nextCitizen, email us directly. We read every message.",
+    actionHref: `mailto:${contactEmail}`,
+    actionLabel: `Email ${contactEmail}`,
+  },
+  {
+    icon: 'clipboard-check',
+    title: 'Report a Problem',
+    description:
+      "If something isn't working, email us and include your Android version, device model, app version, the steps to reproduce the issue, and a screenshot if that helps explain it.",
+    actionHref: `mailto:${contactEmail}`,
+    actionLabel: `Email ${contactEmail}`,
+  },
+  {
+    icon: 'lightbulb',
+    title: 'Feature Requests',
+    description:
+      'Have an idea for a better study tool, a new practice feature, a missing civics question, or a UI or accessibility improvement? We would love to hear it.',
+    actionHref: `mailto:${contactEmail}`,
+    actionLabel: `Email ${contactEmail}`,
+  },
+  {
+    icon: 'shield-check',
+    title: 'Official Immigration Questions',
+    description:
+      `${siteConfig.name} is an independent educational product, and ${siteConfig.company} cannot provide immigration advice. For official information, forms, eligibility, or legal guidance, USCIS is the authoritative source.`,
+    actionHref: 'https://www.uscis.gov/',
+    actionLabel: 'Visit USCIS.gov',
+  },
+];
+---
+
+<BaseLayout
+  title="Contact"
+  description={`Ways to reach ${siteConfig.company} about ${siteConfig.name}, and where to go for official USCIS information.`}
+>
+  <PageHero
+    title="Contact"
+    subtitle={`Ways to reach ${siteConfig.company} about ${siteConfig.name}.`}
+  />
+  <Section ariaLabelledby="contact-heading">
+    <SectionHeader
+      id="contact-heading"
+      title="How to Reach Us"
+      description={`${siteConfig.name} does not use a contact form. Email is the fastest way to reach ${siteConfig.company}.`}
+    />
+    <ul class="grid-list" role="list">
+      {
+        supportCards.map((card) => (
+          <li>
+            <Card class="contact-card">
+              <Icon name={card.icon} class="card__icon" />
+              <h3 class="card__title">{card.title}</h3>
+              <p class="card__description">{card.description}</p>
+              <p class="contact-card__action">
+                <a href={card.actionHref}>{card.actionLabel}</a>
+              </p>
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="contact-card__note">
+      Please do not send passwords, immigration documents, passports, Social Security numbers,
+      financial information, or other sensitive personal information by email.
+    </p>
+    {
+      siteConfig.social.googlePlay && (
+        <div class="contact-play">
+          <p class="contact-play__text">Looking for the app?</p>
+          <a class="btn btn--secondary" href={siteConfig.social.googlePlay}>
+            Get {siteConfig.name} on Google Play
+          </a>
+        </div>
+      )
+    }
+  </Section>
+</BaseLayout>

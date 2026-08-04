@@ -1,0 +1,208 @@
+---
+/**
+ * Screenshots
+ *
+ * Purpose:
+ *   Homepage "Product Screenshots" section — docs/HOMEPAGE_SPECIFICATION.md
+ *   Section 6. Answers "what does nextCitizen actually look like, and what
+ *   can I do with it?" using real device screenshots inside the existing
+ *   PhoneFrame mockup, mirroring the How It Works journey order (Study →
+ *   Practice → Review) per the spec's "best ordering" guidance.
+ *
+ * Props: none — the five documented screens (Homepage, Study, Mock Test,
+ * Local Answers, Interview Mode) are a small, fixed, curated set specific
+ * to this section, colocated here the same way WhyNextCitizen/Features/
+ * HowItWorks colocate their own content rather than pulling it from
+ * src/data/.
+ *
+ * Content rules (see docs/CONTENT_STRATEGY.md and docs/BRAND_GUIDELINES.md):
+ *   - Only real screenshots are ever rendered. No screen is faked, redrawn,
+ *     or padded with an empty phone frame to reach five items — see the
+ *     "Asset resolution" comment below.
+ *   - Interview Mode is always captioned "Coming Soon" (its `status` field
+ *     below) unless a future product-status update confirms it's publicly
+ *     available.
+ *   - Captions describe function in plain English, never marketing praise,
+ *     ratings, usage numbers, or guarantees of test success, per Brand
+ *     Guidelines' writing style and this project's no-fabrication rule.
+ *
+ * Dependencies:
+ *   - components/ui/Section.astro, SectionHeader.astro (shared
+ *     wrapper/heading, same as every other homepage section)
+ *   - components/ui/PhoneFrame.astro (unmodified — see "Asset resolution"
+ *     below for why no change to its slot contract was needed)
+ *   - components/ui/Badge.astro (Interview Mode's "Coming Soon" label)
+ *   - astro:assets `Image` (build-time optimization: resizing, WebP output,
+ *     explicit width/height for CLS prevention)
+ *
+ * Reuse:
+ *   Homepage-only composition, consistent with Hero/WhyNextCitizen/
+ *   HowItWorks/Features. PhoneFrame itself (not this file) is the reusable
+ *   unit for any future page needing a device mockup (e.g. a future
+ *   /features screenshot strip, or a KitchenNest equivalent).
+ *
+ * Accessibility Notes:
+ *   - `<section aria-labelledby="screenshots-heading">` landmark, wired via
+ *     Section's `ariaLabelledby` + SectionHeader's `id`, matching every
+ *     other section's pattern.
+ *   - Each screenshot is a `<figure>`/`<figcaption>` pair. `alt` text
+ *     describes the screen's purpose (e.g. "Flashcard screen showing an
+ *     official U.S. civics test question and its answer"), not every
+ *     visible word on screen; the caption text separately carries the key
+ *     value in real, readable text — nothing essential is locked inside
+ *     the image alone.
+ *   - PhoneFrame's decorative notch is already `aria-hidden` (see
+ *     PhoneFrame.astro); nothing here overrides that.
+ *   - The mobile/tablet horizontal scroll region has `tabindex="0"` and
+ *     `role="region"` with an accessible name, so it's reachable and
+ *     operable via keyboard (native arrow-key scrolling) with no
+ *     JavaScript. This tabindex is present at every breakpoint, including
+ *     desktop (where the layout is a static grid, not a scroller) — a
+ *     deliberate, documented trade-off, since HTML attributes can't be
+ *     made responsive without JS; the alternative (a focusable element
+ *     that does nothing at desktop) was judged less harmful than either
+ *     adding JavaScript or leaving the mobile scroller unreachable by
+ *     keyboard.
+ *   - No JavaScript, no carousel library — scrolling is native CSS
+ *     `scroll-snap`, gracefully degrading to a plain scrollable row if
+ *     `scroll-snap` isn't supported. Reduced-motion is a non-issue here:
+ *     scroll-snap itself has no animation, and no transitions are used.
+ *   - Heading hierarchy: this section's own `<h2>` (via SectionHeader)
+ *     follows Features' `<h2>` as a sibling; no per-item heading is
+ *     needed (each screenshot's "title" is a `<figcaption>` label, not a
+ *     heading) — so no level is skipped or introduced unnecessarily.
+ *
+ * SEO Notes:
+ *   Captions/alt text naturally reference the U.S. civics test, official
+ *   USCIS questions, mock tests, flashcards, local answers, and citizenship
+ *   interview preparation — each once, in plain functional language, never
+ *   repeated for keyword density.
+ */
+import Section from '@components/ui/Section.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import PhoneFrame from '@components/ui/PhoneFrame.astro';
+import Badge from '@components/ui/Badge.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { siteConfig } from '@config/site';
+
+interface ScreenshotContent {
+  id: string;
+  title: string;
+  caption: string;
+  alt: string;
+  status?: 'coming-soon';
+}
+
+// Order mirrors How It Works' study journey (Study → Practice → Review),
+// per docs/HOMEPAGE_SPECIFICATION.md's "best ordering" guidance for this
+// section, rather than introducing a new structure.
+const screenshotContent: ScreenshotContent[] = [
+  {
+    id: 'dashboard',
+    title: 'Home',
+    caption: 'Pick up where you left off and see your study progress at a glance.',
+    alt: 'nextCitizen home screen showing study progress across U.S. civics test topics',
+  },
+  {
+    id: 'study',
+    title: 'Study',
+    caption: 'Work through official civics test questions by topic, with flashcards for quick review.',
+    alt: 'Flashcard screen showing an official U.S. civics test question and its answer',
+  },
+  {
+    id: 'mock-test',
+    title: 'Mock Test',
+    caption: 'Take a mock test that mirrors the format of the real USCIS civics test.',
+    alt: 'Mock test screen showing a civics test question during a timed practice test',
+  },
+  {
+    id: 'local-answers',
+    title: 'Local Answers',
+    caption: "Get the correct answer for questions that depend on where you live, like your state capital or senators.",
+    alt: "Local answers screen showing a civics question personalized to the user's state",
+  },
+  {
+    id: 'interview-mode',
+    title: 'Interview Mode',
+    caption: 'Practice answering questions in an interview-style format to prepare for the citizenship interview.',
+    alt: 'Interview mode screen showing a simulated citizenship interview question',
+    status: 'coming-soon',
+  },
+];
+
+// ---- Asset resolution -------------------------------------------------
+// Real screenshots live in src/assets/screenshots/ (see that folder's
+// README.md for the exact expected filenames/dimensions), named to match
+// each entry's `id` above. import.meta.glob (eager) is used instead of
+// static per-file imports specifically so this component does not fail to
+// build while some or all of these files are still missing — each screen
+// simply isn't rendered until its file exists. At the time this section
+// was implemented, zero real files were present, so the section below
+// renders nothing; it activates automatically, screen by screen, the
+// moment real files are added — no further code changes required.
+//
+// PhoneFrame's existing `<slot />` already accepts any markup, including
+// Astro's optimized <Image> output (which is just a real <img> under the
+// hood), and its existing CSS (`.phone-frame__screen img { width: 100%;
+// height: 100%; object-fit: cover }`) already targets any <img> generically
+// — so no change to PhoneFrame.astro's slot contract was needed here.
+const screenshotImages = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/screenshots/*.{png,jpg,jpeg,webp}',
+  { eager: true },
+);
+
+function findImage(id: string): ImageMetadata | undefined {
+  const match = Object.entries(screenshotImages).find(([path]) => {
+    const filename = path.split('/').pop() ?? '';
+    return filename.startsWith(`${id}.`);
+  });
+  return match?.[1].default;
+}
+
+const screenshots = screenshotContent
+  .map((entry) => ({ ...entry, image: findImage(entry.id) }))
+  .filter((entry): entry is ScreenshotContent & { image: ImageMetadata } => Boolean(entry.image));
+---
+
+{
+  screenshots.length > 0 && (
+    <Section ariaLabelledby="screenshots-heading">
+      <SectionHeader
+        id="screenshots-heading"
+        eyebrow="Inside the App"
+        title="A Clear Study Experience From Start to Finish"
+        description={`A closer look at what you'll actually see and do inside ${siteConfig.name}.`}
+      />
+      <div class="screenshot-gallery" tabindex="0" role="region" aria-label={`${siteConfig.name} screenshots`}>
+        {screenshots.map((shot, index) => (
+          <figure class:list={['screenshot-gallery__item', index === 0 && 'screenshot-gallery__item--featured']}>
+            <PhoneFrame>
+              <Image
+                src={shot.image}
+                alt={shot.alt}
+                width={shot.image.width}
+                height={shot.image.height}
+                format="webp"
+                quality={80}
+                loading="lazy"
+                decoding="async"
+              />
+            </PhoneFrame>
+            <figcaption class="screenshot-gallery__caption">
+              <p class="screenshot-gallery__title">
+                {shot.title}
+                {shot.status === 'coming-soon' && (
+                  <Badge class="screenshot-gallery__badge" variant="neutral">
+                    Coming Soon
+                  </Badge>
+                )}
+              </p>
+              <p class="screenshot-gallery__caption-text">{shot.caption}</p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </Section>
+  )
+}

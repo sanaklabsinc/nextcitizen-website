@@ -1,0 +1,78 @@
+---
+/**
+ * SectionHeader
+ *
+ * Purpose:
+ *   The eyebrow + heading + description block every homepage section opens
+ *   with. Replaces what used to be duplicated markup/CSS in
+ *   WhyNextCitizen, HowItWorks, and Features (`.why__heading`/`.why__intro`,
+ *   `.how-it-works__heading`/`.how-it-works__intro`,
+ *   `.features__heading`/`.features__intro` were byte-for-byte identical
+ *   rules under three different names).
+ *
+ * Props:
+ *   - eyebrow?: string — small label above the title (e.g. a category
+ *     word). Uses the shared `.eyebrow` class (also used by Hero and the
+ *     Phase 1 placeholder pages).
+ *   - title: string — the section's heading text.
+ *   - id?: string — id placed on the heading element, so a parent
+ *     Section's `ariaLabelledby` can reference it.
+ *   - description?: string — supporting sentence below the title.
+ *   - align?: 'center' | 'left' — defaults to 'center' (every current
+ *     homepage section is centered; 'left' is available for a future
+ *     section that shouldn't be, e.g. a two-column layout).
+ *   - width?: 'narrow' | 'default' | 'wide' — max-width preset for the
+ *     description, as a readability/measure constraint (character-count
+ *     based, not part of the rem spacing scale) rather than an arbitrary
+ *     one-off value. Defaults to 'default' (60ch, matching every section
+ *     built so far).
+ *   - as?: 'h1' | 'h2' | 'h3' — heading level, defaults to 'h2' (every
+ *     current homepage section below the Hero uses h2). Exposed so this
+ *     component stays correct if a future page needs it at a different
+ *     depth, without ever skipping a level.
+ *
+ * Dependencies: none beyond global.css's `.eyebrow`/`.section-header*`
+ * classes.
+ *
+ * Reuse:
+ *   Used by WhyNextCitizen, HowItWorks, and Features today. Generic enough
+ *   for any future section (Trust, Screenshots, FAQ) or non-homepage page.
+ *
+ * Accessibility Notes:
+ *   - Heading level is explicit via `as`, defaulting to h2 — callers are
+ *     responsible for not skipping levels, same as before this refactor.
+ *   - Eyebrow and description are plain text, not decorative — no ARIA
+ *     needed.
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  id?: string;
+  description?: string;
+  align?: 'center' | 'left';
+  width?: 'narrow' | 'default' | 'wide';
+  as?: 'h1' | 'h2' | 'h3';
+}
+
+const {
+  eyebrow,
+  title,
+  id,
+  description,
+  align = 'center',
+  width = 'default',
+  as: Heading = 'h2',
+}: Props = Astro.props;
+---
+
+<div class:list={['section-header', `section-header--${align}`]}>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <Heading id={id} class="section-header__title">{title}</Heading>
+  {
+    description && (
+      <p class:list={['section-header__description', `section-header__description--${width}`]}>
+        {description}
+      </p>
+    )
+  }
+</div>

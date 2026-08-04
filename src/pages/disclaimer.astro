@@ -1,0 +1,96 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PageHero from '@components/ui/PageHero.astro';
+import Section from '@components/ui/Section.astro';
+import { siteConfig } from '@config/site';
+
+// Phase 10: replaces the Phase 1 "Coming Soon" placeholder with the real
+// disclaimer. Content is scoped to only what tasks/PHASE10_DISCLAIMER.md
+// verifies (educational purpose, no government affiliation, no legal
+// advice, the sanaklabs@gmail.com contact address) plus facts already
+// established in docs/PRODUCT_CONTEXT.md. See this phase's report for the
+// full list of facts used.
+const lastUpdated = 'August 2, 2026';
+const contactEmail = 'sanaklabs@gmail.com';
+---
+
+<BaseLayout
+  title="Disclaimer"
+  description={`The purpose and limitations of the ${siteConfig.name} website and Android app, in plain English.`}
+>
+  <PageHero
+    title="Disclaimer"
+    subtitle={`The purpose and limitations of the ${siteConfig.name} website and Android app.`}
+  />
+  <Section>
+    <div class="legal-content">
+      <p class="legal-content__updated">Last updated: {lastUpdated}</p>
+
+      <h2>Educational Purpose</h2>
+      <p>
+        {siteConfig.name} is an independent educational application built by {
+          siteConfig.company
+        } to help people prepare for the U.S. Citizenship Test and the naturalization interview.
+        It is a study tool, not a substitute for going through the official naturalization
+        process with USCIS.
+      </p>
+
+      <h2>No Government Affiliation</h2>
+      <p>
+        {siteConfig.name} is not affiliated with, endorsed by, authorized by, or sponsored by
+        USCIS or any U.S. government agency. Any references to USCIS or official government
+        materials are included for educational purposes only.
+      </p>
+
+      <h2>No Legal Advice</h2>
+      <p>
+        Nothing on this website or in the {siteConfig.name} app is legal advice. {
+          siteConfig.name
+        } does not provide immigration, legal, or professional advice. For guidance about your
+        specific situation, consult an immigration attorney or an accredited representative.
+      </p>
+
+      <h2>Accuracy of Information</h2>
+      <p>
+        We make a reasonable effort to keep content accurate and up to date, but we do not
+        guarantee that all information is complete, current, or error-free. Using {
+          siteConfig.name
+        } does not guarantee that you will pass the civics test or the naturalization interview.
+      </p>
+
+      <h2>Official USCIS Information</h2>
+      <p>
+        USCIS is the official and authoritative source for citizenship and immigration
+        information. Always confirm test requirements, forms, fees, and procedures directly with
+        USCIS at uscis.gov.
+      </p>
+
+      <h2>Changes to Immigration Policies</h2>
+      <p>
+        Immigration laws, civics test content, and USCIS procedures can change. We aim to keep
+        {siteConfig.name} aligned with current requirements, but we cannot guarantee that every
+        change will be reflected immediately. Always verify current requirements with USCIS.
+      </p>
+
+      <h2>External Links</h2>
+      <p>
+        This website may link to outside resources, such as official information on USCIS.gov.
+        These external sites have their own terms and policies, and we are not responsible for
+        their content or practices.
+      </p>
+
+      <h2>Copyright &amp; Intellectual Property</h2>
+      <p>
+        The {siteConfig.name} name, logo, and website content belong to {siteConfig.company}.
+        Official civics test questions and other government materials referenced on this site are
+        produced by the U.S. government and are used here for educational purposes only.
+      </p>
+
+      <h2>Contact Information</h2>
+      <p>
+        If you have questions about this disclaimer, contact us at
+        <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.
+      </p>
+    </div>
+  </Section>
+</BaseLayout>

@@ -1,0 +1,74 @@
+---
+/**
+ * Card
+ *
+ * Purpose:
+ *   Generic elevated-surface container. No nextCitizen assumptions, no
+ *   icon/title/description structure baked in — just the visual "card"
+ *   chrome (background, radius, optional shadow, optional border, padding
+ *   scale) around whatever is slotted in. ContentCard (in its default
+ *   "card" variant) composes this instead of declaring its own card CSS.
+ *
+ * Props:
+ *   - as?: 'div' | 'article' | 'li' — element type. Defaults to 'article'
+ *     (a card is normally a self-contained unit of content). 'li' is
+ *     available for a future case where a card needs to *be* the list
+ *     item itself rather than be wrapped by one.
+ *   - elevation?: 'sm' | 'none' — 'sm' (default) is the standard light
+ *     shadow from docs/BRAND_GUIDELINES.md's Cards spec ("very light
+ *     shadow"); 'none' removes it (e.g. for a card that only needs the
+ *     `border` variant, or sits on a surface where a shadow would look
+ *     wrong).
+ *   - border?: boolean — adds a hairline border. Defaults to false (Brand
+ *     Guidelines' cards rely on shadow, not borders, for separation).
+ *   - padding?: 'sm' | 'md' | 'lg' — defaults to 'md' (matches every card
+ *     built so far). Exposed because a future denser use (e.g. a compact
+ *     pricing-comparison card) may need less padding without a new
+ *     component.
+ *   - class?: string — additional classes for the specific consumer's own
+ *     layout needs (e.g. `feature-card` for badge positioning).
+ *
+ * Dependencies: none.
+ *
+ * Reuse:
+ *   This is the primitive future products (KitchenNest, pricing pages,
+ *   marketplace listings, docs pages) should reach for directly — nothing
+ *   here references nextCitizen content or copy.
+ *
+ * Accessibility Notes:
+ *   - Renders no interactive semantics of its own. If a consumer needs the
+ *     card to link somewhere, that decision (and its accessible-name
+ *     implications) belongs in the consumer, not here — see ContentCard's
+ *     title-only-link approach for the rationale.
+ *   - Content remains exactly as accessible as whatever is slotted in;
+ *     this component adds no ARIA roles that could shadow or conflict with
+ *     it.
+ */
+interface Props {
+  as?: 'div' | 'article' | 'li';
+  elevation?: 'sm' | 'none';
+  border?: boolean;
+  padding?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const {
+  as: Tag = 'article',
+  elevation = 'sm',
+  border = false,
+  padding = 'md',
+  class: className,
+}: Props = Astro.props;
+---
+
+<Tag
+  class:list={[
+    'card',
+    `card--padding-${padding}`,
+    elevation === 'none' ? 'card--flat' : null,
+    border ? 'card--bordered' : null,
+    className,
+  ]}
+>
+  <slot />
+</Tag>

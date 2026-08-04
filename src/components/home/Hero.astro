@@ -1,0 +1,79 @@
+---
+/**
+ * Homepage Hero — per docs/HOMEPAGE_SPECIFICATION.md Section 2.
+ *
+ * Owns the page's single <h1>. Copy is deliberately plain and literal (no
+ * idiom, no superlatives) per docs/BRAND_GUIDELINES.md's writing style and
+ * the ESL-aware audience described in docs/CONTENT_STRATEGY.md.
+ *
+ * Homepage-only component (not designed for reuse elsewhere), per the
+ * Homepage Specification's Implementation Guidance — but still accepts
+ * props with sensible defaults rather than hard-coding, so future copy
+ * changes don't require touching component logic.
+ *
+ * Uses Container (not the full Section primitive) for its width
+ * constraint: Hero deliberately has no top border/divider (it sits right
+ * below the sticky header, where a divider would look like a stray double
+ * line) and owns its own <h1> rather than a Section-style <h2>, so
+ * Section's assumptions don't quite fit — Container alone gives it the
+ * same max-width/padding behavior every other section uses without forcing
+ * the rest.
+ */
+import Container from '@components/ui/Container.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig } from '@config/site';
+
+interface Props {
+  headline?: string;
+  subheadline?: string;
+  primaryCtaHref?: string;
+  primaryCtaLabel?: string;
+}
+
+// Phase 12A: the secondary "See Features" button (previously linking to
+// `/features`) was removed — `/features` is an unfinished route with no
+// primary-nav entry as of this phase (see routes.ts), so no public CTA
+// should point to it (tasks/PHASE12A_LAUNCH_BLOCKERS.md). The Hero's single
+// Primary CTA remains the page's one clear action, consistent with
+// docs/HOMEPAGE_SPECIFICATION.md's Section 2 note that the Secondary CTA is
+// an optional, low-commitment alternative, not a required element.
+const {
+  headline = 'Prepare for the U.S. Citizenship Test with Confidence',
+  subheadline = `${siteConfig.name} is a study companion for the USCIS Civics Test and citizenship interview. Content is based on official questions and explained in plain English, so you always know what to study next.`,
+  primaryCtaHref = '/download',
+  primaryCtaLabel = 'Download the App',
+} = Astro.props;
+---
+
+<section class="hero">
+  <Container>
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow">
+          {siteConfig.name} — A {siteConfig.company} Product
+        </p>
+        <h1 class="hero__headline">{headline}</h1>
+        <p class="hero__subheadline">{subheadline}</p>
+        <div class="hero__actions">
+          <Button href={primaryCtaHref} variant="primary">{primaryCtaLabel}</Button>
+        </div>
+      </div>
+
+      <div class="hero__media" aria-hidden="true">
+        <svg viewBox="0 0 240 320" focusable="false" xmlns="http://www.w3.org/2000/svg">
+          <!-- Minimal, abstract phone-mockup illustration placeholder — no
+               clipart, no literal screenshot (per Brand Guidelines'
+               Illustrations rules). Purely decorative; the h1/subheadline
+               already carry the section's meaning. -->
+          <rect x="24" y="8" width="192" height="304" rx="28" fill="none" style="stroke: var(--color-primary);" stroke-width="6" />
+          <rect x="40" y="34" width="160" height="228" rx="8" style="fill: var(--color-bg);" />
+          <circle cx="120" cy="286" r="10" fill="none" style="stroke: var(--color-primary);" stroke-width="4" />
+          <path d="M76 148l30 30 58-58" fill="none" style="stroke: var(--color-success);" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+          <rect x="76" y="70" width="88" height="10" rx="5" style="fill: var(--color-border);" />
+          <rect x="76" y="90" width="60" height="10" rx="5" style="fill: var(--color-border);" />
+          <rect x="96" y="200" width="48" height="10" rx="5" style="fill: var(--color-accent-gold);" />
+        </svg>
+      </div>
+    </div>
+  </Container>
+</section>

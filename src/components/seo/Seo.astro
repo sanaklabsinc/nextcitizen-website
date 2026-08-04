@@ -1,0 +1,44 @@
+---
+import { siteConfig } from '@config/site';
+import { canonicalUrl } from '@utils/url';
+import { resolvePageTitle } from '@utils/seo';
+import type { SeoProps } from '@/types/seo';
+
+interface Props extends SeoProps {}
+
+const { title, description, path, noindex = false, ogImage } = Astro.props;
+
+const pageTitle = resolvePageTitle(path, title);
+const canonical = canonicalUrl(path);
+// Phase 3.1 fix: previously `new URL(imagePath, siteConfig.url)` dropped
+// siteConfig.base entirely, so og:image/twitter:image resolved to
+// https://sanaklabsinc.github.io/images/... instead of
+// https://sanaklabsinc.github.io/nextcitizen-website/images/... — a
+// permanently-broken link-preview image on every page. canonicalUrl()
+// already does the correct base-aware join for any site-relative path
+// (page route or asset path alike), so reuse it here instead of a second,
+// base-unaware join.
+const imagePath = ogImage ?? siteConfig.seo.defaultOgImage;
+const imageUrl = canonicalUrl(imagePath);
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+{/* OpenGraph placeholders — update imageUrl/title once brand assets exist. */}
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={siteConfig.name} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:locale" content={siteConfig.locale.replace('-', '_')} />
+
+{/* Twitter placeholders */}
+<meta name="twitter:card" content={siteConfig.seo.twitterCardType} />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+{siteConfig.social.twitter && <meta name="twitter:site" content={siteConfig.social.twitter} />}

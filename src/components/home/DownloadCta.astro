@@ -1,0 +1,116 @@
+---
+/**
+ * DownloadCta
+ *
+ * Purpose:
+ *   Homepage's primary conversion section — docs/HOMEPAGE_SPECIFICATION.md
+ *   Section 9. The visitor has already seen what nextCitizen is, why it
+ *   exists, how it works, its features, real screenshots, trust facts, and
+ *   FAQ answers; this section is the natural "what do I do next?"
+ *   conclusion, not a sales banner. Exactly one primary action, per the
+ *   Homepage Specification's conversion strategy ("the section order itself
+ *   is the trust-building sequence... this section only asks, once, at the
+ *   very end").
+ *
+ * Props: none — like every other homepage section, this is fixed,
+ * curated content colocated here rather than pulled from src/data/.
+ *
+ * Configuration reuse:
+ *   Phase 12A: `siteConfig.social.googlePlay` (src/config/site.ts) now
+ *   holds the real, verified Google Play listing URL (see
+ *   docs/PRODUCT_CONTEXT.md), added in Phase 11 for the Contact page. This
+ *   section's primary action links straight to it — the same single
+ *   source of truth Header.astro's persistent "Download App" button and
+ *   `/download`'s redirect now use, so every "download" entry point on the
+ *   site is consistent. No raw URL is duplicated.
+ *
+ * Dependencies:
+ *   - components/ui/Section.astro, SectionHeader.astro (shared
+ *     wrapper/heading, same as every other homepage section)
+ *   - components/ui/Icon.astro (`check-circle`, already used by How It
+ *     Works — reused here for reassurance bullets, not re-invented)
+ *   - config/site.ts `siteConfig.social.googlePlay`
+ *
+ *   Phase 12A: no longer uses `components/ui/Button.astro` — Button always
+ *   resolves `href` through `withBase()`, which would corrupt this
+ *   external URL, so the action renders as a plain `.btn.btn--primary`
+ *   anchor instead (same classes Button itself renders, so no visual
+ *   change; same pattern already used on the Contact page).
+ *
+ * Reuse:
+ *   Homepage-only composition, consistent with every other home/ section.
+ *
+ * Accessibility Notes:
+ *   - `<section aria-labelledby="download-heading">` landmark, matching
+ *     every other section's pattern; id verified unique against every
+ *     other id already on the homepage.
+ *   - This section uses a navy (`--color-primary`) background with
+ *     `--color-primary-contrast` (white) text — the same pairing already
+ *     used by `.btn--primary` elsewhere on the site, so its contrast is
+ *     already implicitly established, not a new untested combination.
+ *   - The primary button is visually inverted (white background, navy
+ *     text) specifically because the site's normal `.btn--primary` (navy
+ *     background, white text) would be nearly invisible against this
+ *     section's own navy background — a real contrast problem, not a
+ *     stylistic preference, caught and fixed here.
+ *   - `--color-focus-ring` is locally overridden to
+ *     `--color-primary-contrast` (white) within this section only. The
+ *     global focus ring color is navy (`--color-focus-ring: var(
+ *     --color-primary)`), which would be invisible against this section's
+ *     navy background — this override keeps the focus indicator visible
+ *     without changing focus styling anywhere else on the site.
+ *   - Reassurance items use `role="list"` (defensive Safari/VoiceOver
+ *     guard, same pattern used elsewhere) and decorative, `aria-hidden`
+ *     icons (via Icon.astro) — meaning is carried entirely by the visible
+ *     text, never by icon or color alone.
+ *   - Heading hierarchy: this section's own `<h2>` (via SectionHeader)
+ *     follows FAQ's `<h2>` as a sibling — no skipped levels.
+ *   - Single `<a>`, ordinary and crawlable, keyboard reachable, with
+ *     meaningful accessible text ("Get nextCitizen on Google Play" makes
+ *     sense read completely out of context). Same-tab navigation,
+ *     consistent with every other link on this site.
+ *
+ * SEO Notes:
+ *   Copy naturally references nextCitizen, U.S. citizenship test
+ *   preparation, Google Play, and Android, once each — no keyword
+ *   stuffing. No structured data is added in this phase.
+ */
+import Section from '@components/ui/Section.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import Icon from '@components/ui/Icon.astro';
+import { siteConfig } from '@config/site';
+
+const reassuranceItems: string[] = [
+  'Independent educational product',
+  'Based on official USCIS civics material',
+  'Interview Mode — Coming Soon',
+];
+---
+
+<Section ariaLabelledby="download-heading" class="download-cta">
+  <SectionHeader
+    id="download-heading"
+    eyebrow="Ready to Continue?"
+    title="Take Your U.S. Citizenship Study Plan With You"
+    description={`${siteConfig.name} is available for Android through Google Play. Continue preparing with focused study tools, practice questions, and review support, right on your phone.`}
+  />
+  <div class="download-cta__action">
+    {
+      siteConfig.social.googlePlay && (
+        <a class="btn btn--primary" href={siteConfig.social.googlePlay}>
+          Get {siteConfig.name} on Google Play
+        </a>
+      )
+    }
+  </div>
+  <ul class="reassurance-list" role="list">
+    {
+      reassuranceItems.map((item) => (
+        <li class="reassurance-list__item">
+          <Icon name="check-circle" class="reassurance-list__icon" />
+          {item}
+        </li>
+      ))
+    }
+  </ul>
+</Section>

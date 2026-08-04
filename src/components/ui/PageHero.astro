@@ -1,0 +1,68 @@
+---
+/**
+ * PageHero
+ *
+ * Purpose:
+ *   The opening heading block for a simple, non-homepage page (Privacy,
+ *   Contact, Download, FAQ, Features, Blog, Disclaimer, and any future page
+ *   of the same shape). Replaces markup that used to be hand-duplicated,
+ *   byte-for-byte identical except for copy, across all seven of those
+ *   pages: `<section class="page-hero container"><p class="eyebrow">…</p>
+ *   <h1 class="page-hero__title">…</h1><p class="page-hero__subtitle">…</p>
+ *   </section>`.
+ *
+ *   Deliberately does not reimplement layout — it composes the existing
+ *   Section + SectionHeader primitives (Section already composes Container
+ *   internally), the same primitives every homepage section already uses.
+ *   The only thing this component adds is the page-hero-specific default of
+ *   heading level `h1` (a page's opening hero is the page's single h1;
+ *   mid-page sections built with SectionHeader directly default to `h2`).
+ *
+ * Props:
+ *   - eyebrow?: string — small label above the title (e.g. "Privacy
+ *     Policy"). Passed straight through to SectionHeader.
+ *   - title: string — the page's h1 text (e.g. "Coming Soon").
+ *   - subtitle?: string — supporting sentence below the title. Named
+ *     `subtitle` rather than SectionHeader's `description` because at the
+ *     page level this reads as a page subtitle, not a section description;
+ *     internally it's passed straight to SectionHeader's `description` prop
+ *     so no new copy semantics are introduced.
+ *
+ * Dependencies:
+ *   - components/ui/Section.astro (which itself composes Container.astro)
+ *   - components/ui/SectionHeader.astro
+ *
+ * Reuse:
+ *   Intended for any current or future simple/utility page across any
+ *   SanAkLabs product (legal pages, "coming soon" pages, contact pages,
+ *   etc.) — carries no nextCitizen-specific content or assumptions.
+ *
+ * Accessibility Notes:
+ *   - Renders the page's single h1 via SectionHeader's `as="h1"`. Callers
+ *     must not render another h1 elsewhere on the same page.
+ *   - The wrapping Section is given a fixed landmark id/aria-labelledby
+ *     pair; safe because a page using PageHero has exactly one PageHero.
+ *
+ * Phase 4 update: passes `border={false}` to Section. PageHero sits
+ * directly below the sticky header (unlike mid-page sections, which follow
+ * other content), so Section's default top divider read as a redundant
+ * hairline right under the header's own border-bottom. Section's `border`
+ * prop (added in Phase 3.1 specifically to remove this kind of forced
+ * assumption) now lets PageHero opt out directly instead of bypassing
+ * Section the way Hero.astro still does.
+ */
+import Section from '@components/ui/Section.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+}
+
+const { eyebrow, title, subtitle } = Astro.props;
+---
+
+<Section ariaLabelledby="page-hero-heading" border={false}>
+  <SectionHeader as="h1" id="page-hero-heading" eyebrow={eyebrow} title={title} description={subtitle} />
+</Section>

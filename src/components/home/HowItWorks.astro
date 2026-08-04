@@ -1,0 +1,103 @@
+---
+/**
+ * HowItWorks
+ *
+ * Purpose:
+ *   Homepage "How It Works" section — docs/HOMEPAGE_SPECIFICATION.md
+ *   Section 5. Shown immediately after "Why nextCitizen" (Phase 2.2) so a
+ *   visitor who now understands *why* the product exists can immediately
+ *   see *how* they'd actually use it, reducing uncertainty rather than
+ *   advertising. Exactly three steps (within the Homepage Specification's
+ *   documented "four max, fewer acceptable" range).
+ *
+ * Props:
+ *   None — the three steps are a small, fixed, curated sequence specific
+ *   to this section (same colocation rationale as Hero.astro and
+ *   WhyNextCitizen.astro's value propositions), not a generic collection.
+ *
+ * Dependencies:
+ *   - components/ui/Section.astro, SectionHeader.astro (Phase 2.5 shared
+ *     wrapper/heading — replaces this section's former standalone
+ *     `.how-it-works`/`.how-it-works__heading`/`.how-it-works__intro`
+ *     rules, which were identical to Why/Features' equivalents)
+ *   - components/ui/ContentCard.astro (as="step" variant — Phase 3.1 merged
+ *     StepItem, FeatureCard, and ValueProposition into this one
+ *     configurable primitive)
+ *   - components/ui/Icon.astro (via ContentCard — no new icon implementation)
+ *
+ * Reuse:
+ *   Homepage-only composition, consistent with Hero/WhyNextCitizen.
+ *
+ * Accessibility Notes:
+ *   - `<section aria-labelledby="how-it-works-heading">` landmark, wired
+ *     via Section's `ariaLabelledby` + SectionHeader's `id` (same id
+ *     string on both, by convention).
+ *   - Steps are an `<ol role="list">` (not `<ul>`) because order is
+ *     meaningful content here, unlike the Why section's value
+ *     propositions — see docs/HOMEPAGE_SPECIFICATION.md Section 5's
+ *     "Accessibility Notes" (ordered list semantics required even when
+ *     visually presented as a stepper). `role="list"` guards against the
+ *     Safari/VoiceOver bug that drops list semantics when `list-style` is
+ *     removed (same defensive pattern as WhyNextCitizen's `<ul>`).
+ *   - Heading hierarchy: this section's own `<h2>` (rendered by
+ *     SectionHeader) follows the Why section's `<h2>` as a sibling (not
+ *     nested), each step title is an `<h3>` — no skipped levels.
+ *   - No new JavaScript, no new focusable elements — no accessibility
+ *     regression risk introduced by this section.
+ */
+import Section from '@components/ui/Section.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import ContentCard from '@components/ui/ContentCard.astro';
+import type { IconName } from '@/types/icon';
+import { siteConfig } from '@config/site';
+
+interface StepData {
+  icon: IconName;
+  title: string;
+  description: string;
+}
+
+const steps: StepData[] = [
+  {
+    icon: 'layers',
+    title: 'Choose How You Study',
+    description:
+      "Study by topic, take mock tests, review flashcards, or focus on the practice questions you've missed before — whatever fits how you learn.",
+  },
+  {
+    icon: 'repeat',
+    title: 'Practice Consistently',
+    description:
+      'Short, regular study sessions build steady progress, with clear explanations for every civics test question along the way.',
+  },
+  {
+    icon: 'check-circle',
+    title: 'Walk Into Your Interview Ready',
+    description:
+      "By the time your citizenship interview arrives, you'll have practiced enough to recall answers with confidence.",
+  },
+];
+---
+
+<Section ariaLabelledby="how-it-works-heading">
+  <SectionHeader
+    id="how-it-works-heading"
+    title={`How ${siteConfig.name} Works`}
+    description="A simple, repeatable study guide for the USCIS Civics Test — from your first practice question to interview day."
+  />
+  <ol class="how-it-works__list" role="list">
+    {
+      steps.map((step, index) => (
+        <li>
+          <ContentCard
+            as="step"
+            stepNumber={index + 1}
+            icon={step.icon}
+            title={step.title}
+            description={step.description}
+          />
+        </li>
+      ))
+    }
+  </ol>
+</Section>

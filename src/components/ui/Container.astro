@@ -1,0 +1,43 @@
+---
+/**
+ * Container
+ *
+ * Purpose:
+ *   Responsible for exactly one thing: constraining content to the site's
+ *   maximum reading/layout width and applying responsive horizontal
+ *   padding. Nothing else — no vertical spacing, no background, no
+ *   semantics. This is the single place `--container-width` and
+ *   `--container-padding` are consumed; every other component that needs a
+ *   constrained-width row should use this instead of re-declaring
+ *   max-width/padding-inline itself.
+ *
+ * Props:
+ *   - class?: string — additional classes merged onto the wrapper (e.g. a
+ *     component-specific layout class like `site-header__inner`).
+ *   - as?: 'div' | 'nav' — element type. Defaults to 'div'. Included
+ *     because some future consumers (e.g. a contained nav row) may need a
+ *     different wrapper element without duplicating this component.
+ *
+ * Dependencies: none.
+ *
+ * Reuse:
+ *   Used directly by Section.astro, and by Header.astro/Footer.astro in
+ *   place of their previous hand-written `class="container ..."` divs.
+ *   Safe to reuse in any future page or product that needs the same
+ *   max-width/padding behavior.
+ *
+ * Accessibility Notes:
+ *   Purely a layout wrapper — contributes no semantics of its own beyond
+ *   whatever element type is chosen via `as`.
+ */
+interface Props {
+  class?: string;
+  as?: 'div' | 'nav';
+}
+
+const { class: className, as: Tag = 'div' }: Props = Astro.props;
+---
+
+<Tag class:list={['container', className]}>
+  <slot />
+</Tag>

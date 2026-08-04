@@ -1,0 +1,82 @@
+---
+/**
+ * Header
+ *
+ * Purpose:
+ *   Site-wide sticky header: logo, primary navigation, and the persistent
+ *   Download CTA button. Rendered once by BaseLayout, on every page.
+ *
+ * Props: none — entirely data-driven from siteConfig and routes.ts.
+ *
+ * Dependencies:
+ *   - components/ui/Container.astro (width/padding of the header row)
+ *   - components/navigation/NavMenu.astro (primary link list)
+ *   - components/navigation/MobileNavToggle.astro (hamburger toggle)
+ *   - data/routes.ts (primaryRoutes; the Download route is found via its
+ *     `ctaOnly` flag — see routes.ts)
+ *   - config/site.ts `siteConfig.social.googlePlay`
+ *   - utils/url.ts `withBase`
+ *   - public/icons/icon-192.png (Phase 12B brand icon; reused here at a
+ *     small display size rather than adding a dedicated header-only file)
+ *
+ * Reuse:
+ *   Site-specific composition (siteConfig.name as the logo text, routes.ts
+ *   as the nav source), but every piece it composes (Container, Button,
+ *   NavMenu, MobileNavToggle) is itself generic — a future SanAkLabs
+ *   product would rewrite this file's markup against its own routes/logo,
+ *   not its dependencies.
+ *
+ * Accessibility Notes:
+ *   - `position: sticky` header with a visible `.skip-link` (see
+ *     BaseLayout) letting keyboard/screen-reader users bypass straight to
+ *     `#main-content`.
+ *   - Logo is a plain, unambiguous link to `/`; nav landmark and toggle
+ *     button accessibility live in NavMenu/MobileNavToggle respectively.
+ *   - Phase 12B: the brand icon is decorative (`alt=""`, `aria-hidden`) —
+ *     the visible `nextCitizen` text inside the same link already carries
+ *     the accessible name, so the icon is never the sole carrier of
+ *     meaning. Explicit `width`/`height` prevent layout shift on load.
+ */
+import Container from '@components/ui/Container.astro';
+import NavMenu from '@components/navigation/NavMenu.astro';
+import MobileNavToggle from '@components/navigation/MobileNavToggle.astro';
+import { primaryRoutes } from '@data/routes';
+import { siteConfig } from '@config/site';
+import { withBase } from '@utils/url';
+
+// Single source of truth for the download route's label stays in
+// routes.ts even though, as of Phase 12A, the button links straight to
+// Google Play rather than the internal /download route (see routes.ts and
+// components/ui/Button.astro — Button always resolves `href` through
+// `withBase()`, which is correct for internal routes but would corrupt an
+// external URL, so this renders a plain `.btn` anchor instead, matching the
+// same pattern already used for external links on the Contact page).
+const downloadRoute = primaryRoutes.find((route) => route.ctaOnly);
+---
+
+<header class="site-header">
+  <Container class="site-header__inner">
+    <a class="site-logo" href={withBase('/')}>
+      <img
+        class="site-logo__icon"
+        src={withBase('/icons/icon-192.png')}
+        width="36"
+        height="36"
+        alt=""
+        aria-hidden="true"
+      />
+      {siteConfig.name}
+    </a>
+    <NavMenu />
+    <div class="site-header__actions">
+      {
+        downloadRoute && siteConfig.social.googlePlay && (
+          <a class="btn btn--secondary" href={siteConfig.social.googlePlay}>
+            {downloadRoute.label} App
+          </a>
+        )
+      }
+      <MobileNavToggle />
+    </div>
+  </Container>
+</header>

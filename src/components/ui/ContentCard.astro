@@ -1,0 +1,118 @@
+---
+/**
+ * ContentCard
+ *
+ * Purpose:
+ *   The single "icon + short heading + one supporting sentence" primitive,
+ *   replacing three previously separate, near-identical components:
+ *   ValueProposition, FeatureCard, and StepItem. All three rendered the same
+ *   icon/h3/p shape through copy-pasted markup, coupled only by shared CSS
+ *   classnames (`card__icon`/`card__title`/`card__description`) with no
+ *   compiler enforcement tying them together — flagged as a High-severity
+ *   duplication finding in the Phase 3.0 architecture review. This
+ *   component merges them while preserving each one's exact prior rendered
+ *   output:
+ *     - ValueProposition's usage -> <ContentCard icon title description />
+ *     - FeatureCard's usage      -> <ContentCard icon title description
+ *                                     badge? href? class="feature-card" />
+ *     - StepItem's usage         -> <ContentCard as="step" stepNumber
+ *                                     icon title description />
+ *
+ * Props:
+ *   - icon: IconName — one of the shared Icon component's names.
+ *   - title: string — short heading (rendered as <h3>; the parent section
+ *     owns the <h2>, so heading levels never skip).
+ *   - description: string — one to two supporting sentences.
+ *   - as?: 'card' | 'step' — defaults to 'card' (elevated Card chrome, the
+ *     Why/Features shape). 'step' renders the bare, unelevated numbered-
+ *     marker layout How It Works uses instead — no Card, no shadow, per
+ *     global.css's "How It Works" comment on why steps deliberately don't
+ *     look like independent facts the way Why/Features cards do.
+ *   - stepNumber?: number — only meaningful with as="step"; renders the
+ *     decorative numbered marker exactly as StepItem did.
+ *   - badge?: string — only meaningful with as="card"; optional status
+ *     label rendered through the shared Badge component, exactly as
+ *     FeatureCard did.
+ *   - href?: string — only meaningful with as="card"; when present, only
+ *     the *title* becomes a link (not the whole card) — preserves
+ *     FeatureCard's original accessible-name/nested-interactive-element
+ *     rationale unchanged.
+ *   - class?: string — extra class(es) merged onto the root element (e.g.
+ *     the `feature-card` class Features still applies for badge spacing).
+ *
+ * Dependencies:
+ *   - components/ui/Card.astro (as="card" only)
+ *   - components/ui/Badge.astro (badge only)
+ *   - components/ui/Icon.astro
+ *   - utils/url.ts `withBase` (only invoked when `href` is provided)
+ *
+ * Reuse:
+ *   Generic and fully data-driven — no nextCitizen-specific content or
+ *   copy. The one reusable unit for any future "icon + short statement"
+ *   list (the documented future Trust section, a future onboarding/steps
+ *   page, or a KitchenNest feature list) instead of a new near-duplicate
+ *   component per use case.
+ *
+ * Accessibility Notes:
+ *   - Icon is always decorative (Icon.astro sets aria-hidden/focusable
+ *     false).
+ *   - as="step"'s numbered marker is aria-hidden — real step order comes
+ *     from the parent <ol>'s native numbering, exactly as StepItem
+ *     behaved; the number isn't announced twice.
+ *   - href only ever makes the title text a link, never the whole card,
+ *     avoiding an oversized accessible name or nested-interactive-element
+ *     pitfall.
+ *   - Root element is always <article> in both variants — never itself a
+ *     link/button — so there is no nested-interactive-element risk either
+ *     way. Meant to be wrapped in an <li> (as="card") or <ol> item
+ *     (as="step") by the parent list, matching the original wrapper-
+ *     agnostic pattern both predecessor components used.
+ */
+import Card from '@components/ui/Card.astro';
+import Badge from '@components/ui/Badge.astro';
+import Icon from '@components/ui/Icon.astro';
+import type { IconName } from '@/types/icon';
+import { withBase } from '@utils/url';
+
+interface Props {
+  icon: IconName;
+  title: string;
+  description: string;
+  as?: 'card' | 'step';
+  stepNumber?: number;
+  badge?: string;
+  href?: string;
+  class?: string;
+}
+
+const {
+  icon,
+  title,
+  description,
+  as: variant = 'card',
+  stepNumber,
+  badge,
+  href,
+  class: className,
+}: Props = Astro.props;
+---
+
+{
+  variant === 'step' ? (
+    <article class:list={['step', className]}>
+      <div class="step__marker" aria-hidden="true">
+        <span class="step__number">{stepNumber}</span>
+      </div>
+      <Icon name={icon} class="card__icon" />
+      <h3 class="card__title">{title}</h3>
+      <p class="card__description step__description">{description}</p>
+    </article>
+  ) : (
+    <Card class={className}>
+      <Icon name={icon} class="card__icon" />
+      {badge && <Badge class="feature-card__badge">{badge}</Badge>}
+      <h3 class="card__title">{href ? <a href={withBase(href)}>{title}</a> : title}</h3>
+      <p class="card__description">{description}</p>
+    </Card>
+  )
+}
